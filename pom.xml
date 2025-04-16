@@ -10,7 +10,7 @@
     <artifactId>vaadin-root</artifactId>
     <name>vaadin-root</name>
     <packaging>pom</packaging>
-    <version>8.1-SNAPSHOT</version>
+    <version>9.1.1</version>
 
     <prerequisites>
         <maven>3.1.0</maven>
@@ -27,7 +27,7 @@
         <liferay.portal-kernel.version>2.0.0</liferay.portal-kernel.version>
 
         <vaadin.gwt.version>2.8.2</vaadin.gwt.version>
-        <vaadin.plugin.version>8.1-SNAPSHOT</vaadin.plugin.version>
+        <vaadin.plugin.version>8.1.6</vaadin.plugin.version>
 
         <!-- Used in OSGi manifests -->
         <javax.validation.version>1.0.0.GA</javax.validation.version>
@@ -65,11 +65,14 @@
     </properties>
 
     <!-- TODO: remove this after maven plugin has been released -->
-    <pluginRepositories>
+<!--
+    <pluginRepositories>        
         <pluginRepository>
             <id>vaadin-prereleases</id>
-            <url>http://maven.vaadin.com/vaadin-prereleases</url>
+            <url>https://maven.vaadin.com/vaadin-prereleases</url>
         </pluginRepository>
+        
+        
         <pluginRepository>
             <id>vaadin-snapshots</id>
             <url>https://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
@@ -80,8 +83,9 @@
                 <enabled>true</enabled>
             </snapshots>
         </pluginRepository>
+    
     </pluginRepositories>
-
+-->
     <organization>
         <name>Vaadin Ltd</name>
     </organization>
@@ -653,7 +657,7 @@
                 needed by them -->
             <id>release</id>
             <properties>
-                <vaadin.plugin.version>${project.version}</vaadin.plugin.version>
+                <vaadin.plugin.version>8.1.6</vaadin.plugin.version>
             </properties>
             <modules>
                 <module>buildhelpers</module>
@@ -720,7 +724,7 @@
                 needed by them -->
             <id>prerelease</id>
             <properties>
-                <vaadin.plugin.version>${project.version}</vaadin.plugin.version>
+                <vaadin.plugin.version>8.1.6</vaadin.plugin.version>
             </properties>
             <modules>
                 <module>buildhelpers</module>
@@ -787,7 +791,7 @@
                 needed by them -->
             <id>snapshot</id>
             <properties>
-                <vaadin.plugin.version>${project.version}</vaadin.plugin.version>
+                <vaadin.plugin.version>8.1.6</vaadin.plugin.version>
             </properties>
             <modules>
                 <module>buildhelpers</module>
