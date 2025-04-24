@@ -220,4 +220,14 @@ public class DataCommunicatorTest {
         assertFalse("Stalled object in KeyMapper",
                 communicator.getKeyMapper().has(TEST_OBJECT));
     }
+    
+
+
+    @Test(expected = IllegalStateException.class)
+    public void requestTooMuchRowsFail() {
+        TestDataCommunicator communicator = new TestDataCommunicator();
+        communicator.onRequestRows(0, communicator.getMaximumAllowedRows() + 10,
+                0, 0);
+    }
+        
 }

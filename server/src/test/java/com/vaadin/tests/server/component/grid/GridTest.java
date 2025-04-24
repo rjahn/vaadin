@@ -733,4 +733,25 @@ public class GridTest {
         Column<Person, ?> column1 = grid1.addColumn(ValueProvider.identity());
         grid2.removeColumn(column1);
     }
+
+    @Test
+    public void extendGridCustomDataCommunicator() {
+        Grid<String> grid = new MyGrid<>();
+    }
+
+    public class MyDataCommunicator<T> extends DataCommunicator<T> {
+        @Override
+        protected int getMaximumAllowedRows() {
+            return 600;
+        }
+    }
+
+    public class MyGrid<T> extends Grid<T> {
+
+        public MyGrid() {
+            super(new MyDataCommunicator());
+        }
+
+    }
+
 }
