@@ -21,7 +21,7 @@
             rev="2.0" conf="build-provided -> default" />
 
         <dependency org="javax.validation" name="validation-api"
-            rev="1.0.0.GA" conf="build -> default,sources" />
+            rev="2.0.1.Final" conf="build -> default,sources" />
         <dependency org="org.hibernate" name="hibernate-validator"
             rev="4.2.0.Final" conf="build -> default" />
 
