@@ -15,6 +15,7 @@
  */
 package com.vaadin.data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -503,4 +504,16 @@ public class BinderValidationStatusTest
         Assert.assertEquals(1, results.size());
         Assert.assertFalse(results.get(0).isError());
     }
+
+    @Test
+    public void binderValidationStatus_nullBindingStatuses() {
+        try {
+            new BinderValidationStatus<>(new Binder<Person>(), null,
+                    new ArrayList<>());
+            Assert.fail("Binder should throw an NPE");
+        } catch (NullPointerException npe) {
+            assertNotNull(npe.getMessage());
+        }
+    }
+
 }
