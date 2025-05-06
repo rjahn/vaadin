@@ -512,7 +512,7 @@ public class BinderValidationStatusTest
                     new ArrayList<>());
             Assert.fail("Binder should throw an NPE");
         } catch (NullPointerException npe) {
-            assertNotNull(npe.getMessage());
+            Assert.assertNotNull(npe.getMessage());
         }
     }
 
