@@ -837,11 +837,12 @@ public abstract class AbstractTB3Test extends ParallelTest {
 
     protected void openDebugLogTab() {
 
-        waitUntil(new ExpectedCondition<Boolean>() {
-            @Override
-            public Boolean apply(WebDriver input) {
+        waitUntil(input -> {
+            try {
                 WebElement element = getDebugLogButton();
                 return element != null;
+            } catch (NoSuchElementException e) {
+                return false;
             }
         }, 15);
         getDebugLogButton().click();
