@@ -140,7 +140,7 @@ public abstract class VaadinService implements Serializable {
     private Iterable<DependencyFilter> dependencyFilters;
     private ConnectorIdGenerator connectorIdGenerator;
 
-    private boolean atmosphereAvailable = checkAtmosphereSupport();
+    private Boolean atmosphereAvailable = null;
 
     /**
      * Keeps track of whether a warning about missing push support has already
@@ -1805,7 +1805,7 @@ public abstract class VaadinService implements Serializable {
      *         is not available.
      */
     public boolean ensurePushAvailable() {
-        if (atmosphereAvailable) {
+        if (isAtmosphereAvailable()) {
             return true;
         } else {
             if (!pushWarningEmitted) {
@@ -1817,7 +1817,7 @@ public abstract class VaadinService implements Serializable {
         }
     }
 
-    private static boolean checkAtmosphereSupport() {
+    private boolean checkAtmosphereSupport() {
         String rawVersion = AtmospherePushConnection.getAtmosphereVersion();
         if (rawVersion == null) {
             return false;
@@ -1840,6 +1840,9 @@ public abstract class VaadinService implements Serializable {
      * @return true if Atmosphere is available, false otherwise
      */
     protected boolean isAtmosphereAvailable() {
+        if (atmosphereAvailable == null) {
+            atmosphereAvailable = checkAtmosphereSupport();
+        }
         return atmosphereAvailable;
     }
 
