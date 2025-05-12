@@ -3,9 +3,9 @@
          xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.vaadin</groupId>
+        <groupId>at.ganzleicht.vaadin</groupId>
         <artifactId>vaadin-test</artifactId>
-        <version>8.1-SNAPSHOT</version>
+        <version>9.1.2</version>
         <relativePath>../..</relativePath>
     </parent>
     <artifactId>vaadin-test-jsp-integration</artifactId>
@@ -15,7 +15,7 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.vaadin</groupId>
+            <groupId>at.ganzleicht.vaadin</groupId>
             <artifactId>vaadin-client-compiled</artifactId>
         </dependency>
 

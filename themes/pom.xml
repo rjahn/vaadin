@@ -3,15 +3,15 @@
     xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.vaadin</groupId>
+        <groupId>at.ganzleicht.vaadin</groupId>
         <artifactId>vaadin-root</artifactId>
-        <version>9.1.1</version>
+        <version>9.1.2</version>
     </parent>
     <artifactId>vaadin-themes</artifactId>
     <name>vaadin-themes</name>
     <packaging>jar</packaging>
 
-    <url>https://vaadin.com/</url>
+    <url>https://github.com/rjahn/vaadin</url>
     <description>Vaadin themes</description>
 
     <dependencies>
@@ -142,7 +142,7 @@
 
 
             <plugin>
-                <groupId>com.vaadin</groupId>
+                <groupId>at.ganzleicht.vaadin</groupId>
                 <artifactId>vaadin-maven-plugin</artifactId>
                 <configuration>
                     <compressTheme>true</compressTheme>

@@ -3,9 +3,9 @@
     xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.vaadin</groupId>
+        <groupId>at.ganzleicht.vaadin</groupId>
         <artifactId>vaadin-root</artifactId>
-        <version>9.1.1</version>
+        <version>9.1.2</version>
     </parent>
     <artifactId>vaadin-uitest</artifactId>
     <name>vaadin-uitest</name>
@@ -17,7 +17,7 @@
         <sonar.skip>true</sonar.skip>
     </properties>
 
-    <url>https://vaadin.com/</url>
+    <url>https://github.com/rjahn/vaadin</url>
     <description>Vaadin UI tests</description>
 
     <repositories>
@@ -221,7 +221,7 @@
         </dependency>
         
         <dependency>
-            <groupId>com.vaadin</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>vaadin-testbench-api</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -245,7 +245,7 @@
 
         <plugins>
             <plugin>
-                <groupId>com.vaadin</groupId>
+                <groupId>at.ganzleicht.vaadin</groupId>
                 <artifactId>vaadin-maven-plugin</artifactId>
                 <configuration>
                     <warSourceDirectory>src/main/themes</warSourceDirectory>
@@ -398,10 +398,10 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>org.sonatype.plugins</groupId>
-                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <groupId>org.sonatype.central</groupId>
+                    <artifactId>central-publishing-maven-plugin</artifactId>
                     <configuration>
-                        <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+                        <skipPublishing>true</skipPublishing>
                     </configuration>
                 </plugin>
                 <plugin>

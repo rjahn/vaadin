@@ -2,9 +2,9 @@
 <project xmlns="https://maven.apache.org/POM/4.0.0" xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.vaadin</groupId>
+    <groupId>at.gazleicht.vaadin</groupId>
     <artifactId>vaadin-test-widget-set-testutil</artifactId>
-    <version>8.1-SNAPSHOT</version>
+    <version>9.1.2</version>
     <packaging>jar</packaging>
     <!-- 
         This module does not inherit the vaadin-test on purpose. It is done 
@@ -20,13 +20,13 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.vaadin</groupId>
+            <groupId>at.ganzleicht.vaadin</groupId>
             <artifactId>vaadin-server</artifactId>
             <version>${vaadin.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.vaadin</groupId>
+            <groupId>at.ganzleicht.vaadin</groupId>
             <artifactId>vaadin-testbench-api</artifactId>
             <version>${vaadin.version}</version>
             <scope>provided</scope>
@@ -34,7 +34,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.1</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

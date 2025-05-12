@@ -3,12 +3,12 @@
     xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.vaadin</groupId>
+		<groupId>at.ganzleicht.vaadin</groupId>
 		<artifactId>vaadin-root</artifactId>
-		<version>9.1.1</version>
+		<version>9.1.2</version>
 	</parent>
 	<!-- Needed by a plugin in release build -->
-	<groupId>com.vaadin</groupId>
+	<groupId>at.ganzleicht.vaadin</groupId>
 	<artifactId>vaadin-client-compiled</artifactId>
 	<name>vaadin-client-compiled</name>
 	<packaging>jar</packaging>
@@ -19,7 +19,7 @@
 		<widgetset.local.workers>6</widgetset.local.workers>
 	</properties>
 
-	<url>https://vaadin.com/</url>
+    <url>https://github.com/rjahn/vaadin</url>
 	<description>Vaadin client compiled</description>
 
 	<dependencies>
@@ -71,7 +71,7 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>com.vaadin</groupId>
+				<groupId>at.ganzleicht.vaadin</groupId>
 				<artifactId>vaadin-maven-plugin</artifactId>
 				<configuration>
 					<modules>

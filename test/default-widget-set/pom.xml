@@ -3,20 +3,20 @@
     xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.vaadin</groupId>
+        <groupId>at.ganzleicht.vaadin</groupId>
         <artifactId>vaadin-test</artifactId>
-        <version>8.1-SNAPSHOT</version>
+        <version>9.1.2</version>
     </parent>
     <artifactId>vaadin-test-default-widget-set</artifactId>
     <packaging>war</packaging>
 
     <dependencies>
         <dependency>
-            <groupId>com.vaadin</groupId>
+            <groupId>at.ganzleicht.vaadin</groupId>
             <artifactId>vaadin-test-widget-set-testutil</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.vaadin</groupId>
+            <groupId>at.ganzleicht.vaadin</groupId>
             <artifactId>vaadin-client-compiled</artifactId>
         </dependency>
     </dependencies>

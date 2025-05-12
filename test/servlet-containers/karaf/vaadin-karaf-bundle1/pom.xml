@@ -4,9 +4,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.vaadin</groupId>
+        <groupId>at.ganzleicht.vaadin</groupId>
         <artifactId>vaadin-test-karaf</artifactId>
-        <version>8.1-SNAPSHOT</version>
+        <version>9.1.2</version>
         <relativePath>..</relativePath>
     </parent>
     <artifactId>vaadin-karaf-bundle1</artifactId>
@@ -27,24 +27,23 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.vaadin</groupId>
+            <groupId>at.ganzleicht.vaadin</groupId>
             <artifactId>vaadin-server</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.vaadin</groupId>
+            <groupId>at.ganzleicht.vaadin</groupId>
             <artifactId>vaadin-client-compiled</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.vaadin</groupId>
+            <groupId>at.ganzleicht.vaadin</groupId>
             <artifactId>vaadin-themes</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.vaadin</groupId>
+            <groupId>at.ganzleicht.vaadin</groupId>
             <artifactId>vaadin-osgi-integration</artifactId>
-            <version>8.1.0.beta1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -67,7 +66,7 @@
         </dependency>
         <!-- For compiling WidgetSet -->
         <dependency>
-            <groupId>com.vaadin</groupId>
+            <groupId>at.ganzleicht.vaadin</groupId>
             <artifactId>vaadin-client</artifactId>
             <version>${vaadin.version}</version>
             <scope>provided</scope>
@@ -93,7 +92,7 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>com.vaadin</groupId>
+                <groupId>at.ganzleicht.vaadin</groupId>
                 <artifactId>vaadin-maven-plugin</artifactId>
                 <version>${vaadin.plugin.version}</version>
                 <executions>

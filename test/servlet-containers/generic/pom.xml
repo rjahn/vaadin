@@ -3,9 +3,9 @@
     xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.vaadin</groupId>
+        <groupId>at.ganzleicht.vaadin</groupId>
         <artifactId>vaadin-test</artifactId>
-        <version>8.1-SNAPSHOT</version>
+        <version>9.1.2</version>
         <relativePath>../..</relativePath>
     </parent>
     <artifactId>vaadin-test-generic-integration</artifactId>
@@ -19,28 +19,28 @@
 
         <!-- Project modules -->
         <dependency>
-            <groupId>com.vaadin</groupId>
+            <groupId>at.ganzleicht.vaadin</groupId>
             <artifactId>vaadin-compatibility-server</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.vaadin</groupId>
+            <groupId>at.ganzleicht.vaadin</groupId>
             <artifactId>vaadin-compatibility-client-compiled</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.vaadin</groupId>
+            <groupId>at.ganzleicht.vaadin</groupId>
             <artifactId>vaadin-compatibility-themes</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.vaadin</groupId>
+            <groupId>at.ganzleicht.vaadin</groupId>
             <artifactId>vaadin-client-compiled</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.vaadin</groupId>
+            <groupId>at.ganzleicht.vaadin</groupId>
             <artifactId>vaadin-push</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.vaadin</groupId>
+            <groupId>at.ganzleicht.vaadin</groupId>
             <artifactId>vaadin-testbench-api</artifactId>
             <scope>test</scope>
         </dependency>

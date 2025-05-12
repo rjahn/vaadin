@@ -3,10 +3,10 @@
          xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
+        <groupId>at.ganzleicht.vaadin</groupId>
         <artifactId>vaadin-test-karaf</artifactId>
-        <groupId>com.vaadin</groupId>
         <relativePath>..</relativePath>
-        <version>8.1-SNAPSHOT</version>
+        <version>9.1.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -16,13 +16,13 @@
     <dependencies>
         <!--Vaadin dependencies should not be in a classpath-->
         <dependency>
-            <groupId>com.vaadin</groupId>
+            <groupId>at.ganzleicht.vaadin</groupId>
             <artifactId>vaadin-server</artifactId>
             <version>${vaadin.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.vaadin</groupId>
+            <groupId>at.ganzleicht.vaadin</groupId>
             <artifactId>vaadin-themes</artifactId>
             <version>${vaadin.version}</version>
             <scope>provided</scope>

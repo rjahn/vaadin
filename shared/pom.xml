@@ -3,9 +3,9 @@
     xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.vaadin</groupId>
+        <groupId>at.ganzleicht.vaadin</groupId>
         <artifactId>vaadin-root</artifactId>
-        <version>9.1.1</version>
+        <version>9.1.2</version>
     </parent>
     <artifactId>vaadin-shared</artifactId>
     <name>vaadin-shared</name>
@@ -14,7 +14,7 @@
     <properties>
     </properties>
 
-    <url>https://vaadin.com/</url>
+    <url>https://github.com/rjahn/vaadin</url>
     <description>Vaadin shared</description>
 
     <dependencies>

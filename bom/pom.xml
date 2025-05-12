@@ -2,18 +2,18 @@
     xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.vaadin</groupId>
+        <groupId>at.ganzleicht.vaadin</groupId>
         <artifactId>vaadin-parent</artifactId>
         <version>1.1.0</version>
         <relativePath />
     </parent>
-    <groupId>com.vaadin</groupId>
+    <groupId>at.ganzleicht.vaadin</groupId>
     <artifactId>vaadin-bom</artifactId>
     <packaging>pom</packaging>
-    <version>9.1.1</version>
+    <version>9.1.2</version>
     <name>Vaadin Framework (Bill of Materials)</name>
+    <url>https://github.com/rjahn/vaadin</url>
     <description>Vaadin Framework (Bill of Materials)</description>
-    <url>https://vaadin.com</url>
 
     <properties>
         <vaadin.spring.version>2.0.1</vaadin.spring.version>
@@ -32,67 +32,67 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.vaadin</groupId>
+                <groupId>at.ganzleicht.vaadin</groupId>
                 <artifactId>vaadin-shared</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.vaadin</groupId>
+                <groupId>at.ganzleicht.vaadin</groupId>
                 <artifactId>vaadin-server</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.vaadin</groupId>
+                <groupId>at.ganzleicht.vaadin</groupId>
                 <artifactId>vaadin-push</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.vaadin</groupId>
+                <groupId>at.ganzleicht.vaadin</groupId>
                 <artifactId>vaadin-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.vaadin</groupId>
+                <groupId>at.ganzleicht.vaadin</groupId>
                 <artifactId>vaadin-client-compiler</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.vaadin</groupId>
+                <groupId>at.ganzleicht.vaadin</groupId>
                 <artifactId>vaadin-client-compiled</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.vaadin</groupId>
+                <groupId>at.ganzleicht.vaadin</groupId>
                 <artifactId>vaadin-themes</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.vaadin</groupId>
+                <groupId>at.ganzleicht.vaadin</groupId>
                 <artifactId>vaadin-compatibility-shared</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.vaadin</groupId>
+                <groupId>at.ganzleicht.vaadin</groupId>
                 <artifactId>vaadin-compatibility-server</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.vaadin</groupId>
+                <groupId>at.ganzleicht.vaadin</groupId>
                 <artifactId>vaadin-compatibility-themes</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.vaadin</groupId>
+                <groupId>at.ganzleicht.vaadin</groupId>
                 <artifactId>vaadin-compatibility-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.vaadin</groupId>
+                <groupId>at.ganzleicht.vaadin</groupId>
                 <artifactId>vaadin-compatibility-client-compiled</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.vaadin</groupId>
+                <groupId>at.ganzleicht.vaadin</groupId>
                 <artifactId>vaadin-testbench-api</artifactId>
                 <version>${project.version}</version>
             </dependency>

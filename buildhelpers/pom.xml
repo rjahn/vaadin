@@ -3,16 +3,16 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.vaadin</groupId>
+        <groupId>at.ganzleicht.vaadin</groupId>
         <artifactId>vaadin-root</artifactId>
-        <version>9.1.1</version>
+        <version>9.1.2</version>
     </parent>
-    <groupId>com.vaadin</groupId>
+    <groupId>at.ganzleicht.vaadin</groupId>
     <artifactId>vaadin-buildhelpers</artifactId>
     <name>vaadin-buildhelpers</name>
     <packaging>jar</packaging>
 
-    <url>https://vaadin.com/</url>
+    <url>https://github.com/rjahn/vaadin</url>
     <description>Vaadin build helpers</description>
 
     <dependencies>
@@ -87,10 +87,10 @@
                     </configuration>
                 </plugin>
                 <plugin>
-                    <groupId>org.sonatype.plugins</groupId>
-                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <groupId>org.sonatype.central</groupId>
+                    <artifactId>central-publishing-maven-plugin</artifactId>
                     <configuration>
-                        <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+                        <skipPublishing>true</skipPublishing>
                     </configuration>
                 </plugin>
             </plugins>

@@ -3,13 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>vaadin-osgi-integration</artifactId>
     <packaging>jar</packaging>
-    <url>https://vaadin.com/</url>
+    <url>https://github.com/rjahn/vaadin</url>
     <description>OSGi Integration</description>
 
     <parent>
-        <groupId>com.vaadin</groupId>
+        <groupId>at.ganzleicht.vaadin</groupId>
         <artifactId>vaadin-root</artifactId>
-        <version>9.1.1</version>
+        <version>9.1.2</version>
     </parent>
 
     <properties>
