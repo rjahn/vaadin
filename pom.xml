@@ -37,7 +37,7 @@
 
         <!-- Note that this should be kept in sync with the class Constants -->
         <atmosphere.runtime.version>2.4.30.vaadin7</atmosphere.runtime.version>
-        <atmosphere.client.version>2.3.9.vaadin2</atmosphere.client.version>
+        <atmosphere.client.version>2.3.9.vaadin4</atmosphere.client.version>
 
         <!-- OSGi -->
         <osgi.execution.environment>JavaSE-1.8</osgi.execution.environment>

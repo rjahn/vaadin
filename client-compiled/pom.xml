@@ -15,6 +15,7 @@
 
 	<properties>
 		<widgetset.name>com.vaadin.DefaultWidgetSet</widgetset.name>
+		<!-- OBF, PRETTY, DETAILED -->
 		<widgetset.style>OBF</widgetset.style>
 		<widgetset.local.workers>6</widgetset.local.workers>
 	</properties>

@@ -24,7 +24,7 @@
             <artifactId>atmosphere-runtime</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.vaadin.external.atmosphere.client</groupId>
+            <groupId>at.ganzleicht.vaadin.atmosphere.client</groupId>
             <artifactId>javascript</artifactId>
             <type>war</type>
             <scope>provided</scope>
@@ -68,7 +68,7 @@
 
                                 <!-- Unzip to temp dir -->
                                 <unzip
-                                    src="${maven.dependency.com.vaadin.external.atmosphere.client.javascript.war.path}"
+                                    src="${maven.dependency.at.ganzleicht.vaadin.atmosphere.client.javascript.war.path}"
                                     dest="${javascript.unpack}">
                                     <patternset>
                                         <include name="**/atmosphere.js" />
