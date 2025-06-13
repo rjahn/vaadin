@@ -230,13 +230,15 @@ public final class CvalChecker {
     		    con.setReadTimeout(timeoutMs);
             	    r = IOUtils.toString(con.getInputStream());
 
-                    System.out.println("##############################################");
-	            System.out.println("Current dir: " + new java.io.File("").getAbsolutePath());
-    	            System.out.println("User-Agent:  [" + ua + "]");
-    		    System.out.println("Url:         " + url);
-                    System.out.println();
-	            System.out.println(r);
-    	            System.out.println("##############################################");
+                    if (Boolean.getBoolean("vaadin.client-compiler.offline")) {
+                        System.out.println("##############################################");
+    		        System.out.println("Current dir: " + new java.io.File("").getAbsolutePath());
+    	    	        System.out.println("User-Agent:  [" + ua + "]");
+    			System.out.println("Url:         " + url);
+                	System.out.println();
+	        	System.out.println(r);
+    	        	System.out.println("##############################################");
+    	    	    }
 		}
 		
                 return r;
