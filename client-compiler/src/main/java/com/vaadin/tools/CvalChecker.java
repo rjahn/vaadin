@@ -19,6 +19,7 @@ package com.vaadin.tools;
 import static java.lang.Integer.parseInt;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -33,6 +34,8 @@ import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 
 import org.apache.commons.io.IOUtils;
+
+import com.vaadin.tools.SimpleFeature;
 
 import elemental.json.JsonException;
 import elemental.json.JsonNull;
@@ -183,18 +186,59 @@ public final class CvalChecker {
             String url = licenseUrl + productKey;
             URLConnection con;
             try {
-                // Send some additional info in the User-Agent string.
-                String ua = "Cval " + productName + " " + productKey + " "
-                        + getFirstLaunch();
-                for (String prop : Arrays.asList("java.vendor.url",
-                        "java.version", "os.name", "os.version", "os.arch")) {
-                    ua += " " + System.getProperty(prop, "-").replace(" ", "_");
+                String r = null;
+                
+                if (Boolean.getBoolean("vaadin.client-compiler.offline")) {
+            	    File ficache = new File(new File("").getAbsolutePath(), "/" + productName + ".offline");
+
+                    System.out.println("===> offline license for " + productName + ": " + ficache.exists());
+            	    
+            	    if (ficache.exists()) {
+            	        FileInputStream fis = new FileInputStream(ficache);
+            	        
+            	        try {
+                            r = IOUtils.toString(fis);
+                        }
+                        catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        finally {
+                            try {
+                                fis.close();
+                            }
+                            catch (Exception exc) {
+                                //ignore
+                            }
+                        }
+            	    }
                 }
-                con = new URL(url).openConnection();
-                con.setRequestProperty("User-Agent", ua);
-                con.setConnectTimeout(timeoutMs);
-                con.setReadTimeout(timeoutMs);
-                String r = IOUtils.toString(con.getInputStream());
+                
+                if (r == null)
+                {
+                    System.out.println("===> check license online");
+                
+                    // Send some additional info in the User-Agent string.
+	            String ua = "Cval " + productName + " " + productKey + " "
+    	                    + getFirstLaunch();
+                    for (String prop : Arrays.asList("java.vendor.url",
+	                    "java.version", "os.name", "os.version", "os.arch")) {
+    	                ua += " " + System.getProperty(prop, "-").replace(" ", "_");
+        	    }
+                    con = new URL(url).openConnection();
+	            con.setRequestProperty("User-Agent", ua);
+    	            con.setConnectTimeout(timeoutMs);
+    		    con.setReadTimeout(timeoutMs);
+            	    r = IOUtils.toString(con.getInputStream());
+
+                    System.out.println("##############################################");
+	            System.out.println("Current dir: " + new java.io.File("").getAbsolutePath());
+    	            System.out.println("User-Agent:  [" + ua + "]");
+    		    System.out.println("Url:         " + url);
+                    System.out.println();
+	            System.out.println(r);
+    	            System.out.println("##############################################");
+		}
+		
                 return r;
             } catch (MalformedURLException e) {
                 e.printStackTrace();
@@ -206,14 +250,7 @@ public final class CvalChecker {
          * Get the GWT firstLaunch timestamp.
          */
         String getFirstLaunch() {
-            try {
-                Class<?> clz = Class
-                        .forName("com.google.gwt.dev.shell.CheckForUpdates");
-                return Preferences.userNodeForPackage(clz).get("firstLaunch",
-                        "-");
-            } catch (ClassNotFoundException e) {
-                return "-";
-            }
+            return Preferences.userNodeForPackage(SimpleFeature.class).get("firstLaunch", "-");
         }
     }
 

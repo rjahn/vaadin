@@ -27,7 +27,6 @@ import java.util.prefs.Preferences;
 
 import org.apache.commons.io.IOUtils;
 
-import com.google.gwt.dev.shell.CheckForUpdates;
 import com.vaadin.shared.Version;
 
 public class ReportUsage {
@@ -111,6 +110,12 @@ public class ReportUsage {
     }
 
     private static void doHttpGet(String userAgent, String url) {
+        if (Boolean.getBoolean("vaadin.client-compiler.offline")) {
+	    System.out.println("===> skip usage report");
+	    
+	    return;
+	}
+
         Throwable caught;
         InputStream is = null;
         try {
@@ -119,7 +124,17 @@ public class ReportUsage {
             conn.setRequestProperty(USER_AGENT, userAgent);
             is = conn.getInputStream();
             // TODO use the results
-            IOUtils.toByteArray(is);
+            byte[] byresult = IOUtils.toByteArray(is);
+            
+            System.out.println("======================================");
+            if (byresult != null) {
+        	System.out.println(new String(byresult));
+    	    }
+    	    else {
+    	        System.out.println("null");
+    	    }
+            System.out.println("======================================");
+            
             return;
         } catch (MalformedURLException e) {
             caught = e;
@@ -165,7 +180,7 @@ public class ReportUsage {
 
     private static String loadFirstLaunch() {
         Preferences prefs = Preferences
-                .userNodeForPackage(CheckForUpdates.class);
+                .userNodeForPackage(SimpleFeature.class);
 
         String firstLaunch = prefs.get(FIRST_LAUNCH, null);
         if (firstLaunch == null) {

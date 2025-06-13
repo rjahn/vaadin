@@ -37,8 +37,8 @@ import com.vaadin.shared.ui.dd.AcceptCriterion;
  * GWT generator to build {@link VAcceptCriterionFactory} implementation
  * dynamically based on {@link AcceptCriterion} annotations available in
  * classpath.
- *
  */
+@SuppressWarnings("deprecation")
 public class AcceptCriteriaFactoryGenerator extends Generator {
 
     private String packageName;
