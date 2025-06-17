@@ -44,6 +44,7 @@ import com.google.gwt.user.client.EventListener;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.TextBox;
 import com.vaadin.shared.util.SharedUtil;
 
 /**
@@ -1861,4 +1862,26 @@ public class WidgetUtil {
         int relativeTop = element.getAbsoluteTop() - Window.getScrollTop();
         return WidgetUtil.getTouchOrMouseClientY(event) - relativeTop;
     }
+
+
+    public static void disableBrowserAutocomplete(TextBox textBox) {
+        /*-
+         * Stop the browser from showing its own suggestion popup.
+         *
+         * Using an invalid value instead of "off" as suggested by
+         * https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion
+         *
+         * Leaving the non-standard Safari options autocapitalize and
+         * autocorrect untouched since those do not interfere in the same
+         * way, and they might be useful in a combo box where new items are
+         * allowed.
+         */
+        if (BrowserInfo.get().isChrome()) {
+            // Chrome supports "off" and random number does not work with
+            // Chrome
+            textBox.getElement().setAttribute("autocomplete", "off");
+        } else {
+            textBox.getElement().setAttribute("autocomplete", Math.random() + "");
+        }       
+    }    
 }
