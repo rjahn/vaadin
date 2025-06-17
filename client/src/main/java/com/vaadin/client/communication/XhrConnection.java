@@ -17,6 +17,7 @@ package com.vaadin.client.communication;
 
 import java.util.logging.Logger;
 
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;

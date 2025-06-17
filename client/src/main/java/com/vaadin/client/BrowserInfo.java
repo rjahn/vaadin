@@ -516,7 +516,7 @@ public class BrowserInfo {
      * other than dots and digits.
      *
      * @return the complete browser version or {@code null} if unknown
-     * @since 8.4
+     * @since 9
      */
     public String getBrowserVersion() {
         return browserDetails.getBrowserVersion();

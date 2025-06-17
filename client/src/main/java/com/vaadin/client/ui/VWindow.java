@@ -617,8 +617,7 @@ public class VWindow extends VOverlay implements ShortcutActionHandlerOwner,
             Scheduler.get().scheduleFinally(new Command() {
                 @Override
                 public void execute() {
-                    List<ComponentConnector> childComponents = ((HasComponentsConnector) ConnectorMap
-                            .get(client).getConnector(this)).getChildComponents();
+                    List<ComponentConnector> childComponents = ((HasComponentsConnector)ConnectorMap.get(client).getConnector(VWindow.this)).getChildComponents();
                     if (!childComponents.isEmpty()) {
                         LayoutManager layoutManager = getLayoutManager();
                         layoutManager.setNeedsMeasure(childComponents.get(0));
