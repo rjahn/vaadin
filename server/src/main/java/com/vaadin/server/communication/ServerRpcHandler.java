@@ -199,6 +199,15 @@ public class ServerRpcHandler implements Serializable {
         public String getWidgetsetVersion() {
             return widgetsetVersion;
         }
+
+        /**
+         * Checks if request contains an unload beacon.
+         * 
+         * @since 9
+         */
+        public boolean isUnloadBeaconRequest() {
+            return json.hasKey(ApplicationConstants.UNLOAD_BEACON);
+        }        
     }
 
     private static final int MAX_BUFFER_SIZE = 64 * 1024;
@@ -279,6 +288,45 @@ public class ServerRpcHandler implements Serializable {
             ui.getSession().getCommunicationManager().repaintAll(ui);
         }
 
+        if (rpcRequest.isUnloadBeaconRequest()) {
+            if (isPreserveUIOnRefresh(request)) {
+                getLogger().finer("Ignore Closing UI because preserveOnRefresh is enabled");
+            } else {
+                ui.close();
+
+                getLogger().finer("Closed UI because of unload beacon request");
+            }
+        }        
+    }
+
+    /**
+     * Gets whether preserve UI on refresh was set via URL parameter or via deployment configuration.
+     * 
+     * @return <code>true</code> if preserve UI on refresh was configured, <code>false</code> otherwise 
+     *         (also means: use default implementation)
+     */
+    public static boolean isPreserveUIOnRefresh(VaadinRequest request)
+    {
+        //1: URL parameter
+        if (request.getParameter(Constants.PARAMETER_PRESERVEONREFRESH) != null)
+        {
+            return true;
+        }
+        
+        try {
+            //2: Settings
+            String preserve = request.getService().getDeploymentConfiguration().getApplicationOrSystemProperty(Constants.PARAMETER_PRESERVEONREFRESH, "false");
+            
+            if (Boolean.parseBoolean(preserve))
+            {
+                return true;
+            }
+            
+            return false;
+        }
+        catch (Exception e) {
+            return false;
+        }
     }
 
     /**

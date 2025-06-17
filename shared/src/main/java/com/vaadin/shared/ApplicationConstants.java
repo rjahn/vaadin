@@ -251,4 +251,7 @@ public class ApplicationConstants implements Serializable {
      */
     public static final String MOBILE_DND_POLYFILL_JS = "drag-drop-polyfill.min.js";
 
+    /** Unload beacon. */
+    public static final String UNLOAD_BEACON = "UNLOAD";
+
 }

@@ -61,6 +61,66 @@ public class MessageSender {
     }
 
     /**
+     * Creates the payload for an unload message which will be sent via beacon API or 
+     * standard XHR.
+     * 
+     * @return the payload
+     */
+    private JsonObject createUnloadPayload() {
+        JsonObject jo = Json.createObject();
+        jo.put(ApplicationConstants.UNLOAD_BEACON, true);
+
+        return preparePayload(Json.createArray(), jo);
+    }
+
+    /**
+     * Checks if beacon API is supported.
+     * 
+     * @return <code>true</code> if beacon API is supported
+     */
+    private native boolean isBeaconAPISupported() /*-{
+        if ($wnd.navigator == undefined) return false; 
+
+        if ($wnd.navigator.sendBeacon == undefined) return false;
+
+        return true;
+    }-*/;
+
+    /**
+     * Send an unload message beancon API or XHR.
+     */
+    public void sendUnloadBeacon() {
+        if (isBeaconAPISupported()) {
+            sendBeacon(xhrConnection.getUri(), createUnloadPayload().toJson());
+        } else {
+            //try anyway, because usually at this time it's not possible to send via XHR
+            //because browser blocks
+            try {
+                sendUnloadMessage();
+            } catch (Exception e) {
+                //expected state
+            }
+        }
+    }
+
+    /**
+     * Send an unload message via XHR.
+     */
+    public void sendUnloadMessage() {
+        send(createUnloadPayload());
+    }
+
+    /**
+     * Sends an asynchronous beacon message. 
+     * 
+     * @param url target URL
+     * @param payload payload (should be kept very small)
+     */
+    public static native void sendBeacon(String url, String payload) /*-{
+        $wnd.navigator.sendBeacon(url, payload);
+    }-*/;    
+
+    /**
      * Sets the application connection this instance is connected to. Called
      * internally by the framework.
      *
@@ -128,7 +188,7 @@ public class MessageSender {
         if (showLoadingIndicator) {
             connection.getLoadingIndicator().trigger();
         }
-        send(reqJson, extraJson);
+        send(preparePayload(reqJson, extraJson));
     }
 
     private ServerRpcQueue getServerRpcQueue() {
@@ -143,7 +203,7 @@ public class MessageSender {
      * @param extraParams
      *            Parameters that are added to the payload
      */
-    protected void send(final JsonArray reqInvocations,
+    protected JsonObject preparePayload(final JsonArray reqInvocations,
             final JsonObject extraJson) {
         startRequest();
 
@@ -165,9 +225,21 @@ public class MessageSender {
             }
         }
 
-        send(payload);
-
+        return payload;
     }
+
+    /**
+     * Send a UIDL request to the server.
+     *
+     * @param reqInvocations
+     *            Data containing RPC invocations and all related information.
+     * @param extraJson
+     *            The JsonObject whose parameters are added to the payload
+     */
+    protected void send(final JsonArray reqInvocations,
+                        final JsonObject extraJson) {
+        send(preparePayload(reqInvocations, extraJson));
+    }    
 
     /**
      * Sends an asynchronous or synchronous UIDL request to the server using the
@@ -361,7 +433,7 @@ public class MessageSender {
         getLogger().info("Resynchronizing from server");
         JsonObject resyncParam = Json.createObject();
         resyncParam.put(ApplicationConstants.RESYNCHRONIZE_ID, true);
-        send(Json.createArray(), resyncParam);
+        send(preparePayload(Json.createArray(), resyncParam));
     }
 
     /**

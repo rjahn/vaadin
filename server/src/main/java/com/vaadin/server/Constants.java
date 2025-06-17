@@ -145,6 +145,9 @@ public interface Constants {
     // Widget set parameter name
     static final String PARAMETER_WIDGETSET = "widgetset";
 
+    /** the property name for the preserve on refresh option. */
+    public static final String PARAMETER_PRESERVEONREFRESH = "preserveOnRefresh";
+
     /**
      * @deprecated As of 7.1, this message is no longer used and might be
      *             removed from the code.

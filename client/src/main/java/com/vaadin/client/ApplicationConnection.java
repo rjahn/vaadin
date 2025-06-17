@@ -65,6 +65,8 @@ import com.vaadin.shared.Version;
 import com.vaadin.shared.communication.LegacyChangeVariablesInvocation;
 import com.vaadin.shared.util.SharedUtil;
 
+import elemental.client.Browser;
+
 /**
  * This is the client side communication "engine", managing client-server
  * communication with its server side counterpart
@@ -472,6 +474,13 @@ public class ApplicationConnection implements HasHandlers {
                 }
             });
         }
+
+        //used information of
+        //https://github.com/vaadin/flow/issues/19305
+        //because unload event will be removed from browsers and it's already deprecated
+        Browser.getWindow().addEventListener("beforeunload", e -> {
+            getMessageSender().sendUnloadBeacon();
+        });
     }
 
     /**
