@@ -197,10 +197,11 @@ public class FileDropTargetConnector extends DropTargetExtensionConnector {
         protected FileUploadXHR() {
         }
 
-        public final native void postFile(File file) /*-{
-            this.setRequestHeader('Content-Type', 'multipart/form-data');
-            this.send(file);
+        public final native void postFile(File file)
+        /*-{
+            var formData = new $wnd.FormData();
+            formData.append("File", file);
+            this.send(formData);
         }-*/;
-
     }
 }
