@@ -410,7 +410,11 @@ public class ApplicationConnection implements HasHandlers {
 
         initializeClientHooks();
 
-        uIConnector.init(cnf.getRootPanelId(), this);
+        if (cnf.getRootElement() != null) {
+            uIConnector.init(cnf.getRootElement(), this);
+        } else {
+            uIConnector.init(cnf.getRootPanelId(), this);
+        }
 
         // Connection state handler preloads the reconnect dialog, which uses
         // overlay container. This in turn depends on VUI being attached
@@ -482,7 +486,7 @@ public class ApplicationConnection implements HasHandlers {
     }
 
     private native void initializeTestbenchHooks(
-            ComponentLocator componentLocator, String TTAppId)
+            ComponentLocator componentLocator, String ttAppId)
     /*-{
         var ap = this;
         var client = {};
@@ -528,7 +532,7 @@ public class ApplicationConnection implements HasHandlers {
         });
         client.initializing = false;
 
-        $wnd.vaadin.clients[TTAppId] = client;
+        $wnd.vaadin.clients[ttAppId] = client;
     }-*/;
 
     /**
@@ -1359,8 +1363,7 @@ public class ApplicationConnection implements HasHandlers {
             return false;
         }
 
-        return hasEventListeners(getConnectorMap().getConnector(widget),
-                eventIdentifier);
+        return hasEventListeners(connector, eventIdentifier);
     }
 
     LayoutManager getLayoutManager() {
