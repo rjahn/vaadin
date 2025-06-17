@@ -88,7 +88,7 @@ public class AnimationUtil {
     /**
      * Removes the given animation listener.
      *
-     * @param element
+     * @param elem
      *            the element which has the listener
      * @param animationEndListener
      *            the listener to remove
@@ -131,11 +131,14 @@ public class AnimationUtil {
     /*-{
         if(event.webkitAnimationName)
             return event.webkitAnimationName;
-        else if(event.animationName)
+        
+        if(event.animationName)
             return event.animationName;
-        else if(event.mozAnimationName)
+        
+        if(event.mozAnimationName)
             return event.mozAnimationName;
-        else if(event.oAnimationName)
+        
+        if(event.oAnimationName)
             return event.oAnimationName;
     
         return "";
@@ -152,13 +155,13 @@ public class AnimationUtil {
         if(cs.getPropertyValue("-webkit-animation-name"))
             return cs.getPropertyValue("-webkit-animation-name");
     
-        else if(cs.getPropertyValue("animation-name"))
+        if(cs.getPropertyValue("animation-name"))
             return cs.getPropertyValue("animation-name");
     
-        else if(cs.getPropertyValue("-moz-animation-name"))
+        if(cs.getPropertyValue("-moz-animation-name"))
             return cs.getPropertyValue("-moz-animation-name");
     
-        else if(cs.getPropertyValue("-o-animation-name"))
+        if(cs.getPropertyValue("-o-animation-name"))
             return cs.getPropertyValue("-o-animation-name");
     
         return "";
