@@ -1561,6 +1561,15 @@ public class WidgetUtil {
         }
 
         @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + (int) value;
+            result = prime * result + ((unit == null) ? 0 : unit.hashCode());
+            return result;
+        }
+
+        @Override
         public boolean equals(Object obj) {
             if (obj instanceof CssSize) {
                 CssSize size = (CssSize) obj;
