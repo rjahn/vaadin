@@ -463,7 +463,7 @@ public class WidgetUtil {
             final int scrollleft = elem.getScrollLeft();
             elem.getStyle().setProperty("overflow", "hidden");
 
-            Scheduler.get().scheduleDeferred(new Command() {
+            Scheduler.get().scheduleFinally(new Command() {
                 @Override
                 public void execute() {
                     // Dough, Safari scroll auto means actually just a moped

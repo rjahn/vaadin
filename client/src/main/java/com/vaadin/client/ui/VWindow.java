@@ -58,6 +58,7 @@ import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ConnectorMap;
 import com.vaadin.client.Focusable;
+import com.vaadin.client.HasComponentsConnector;
 import com.vaadin.client.LayoutManager;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.debug.internal.VDebugWindow;
@@ -612,6 +613,19 @@ public class VWindow extends VOverlay implements ShortcutActionHandlerOwner,
              */
             WidgetUtil
                     .runWebkitOverflowAutoFix(contents.getFirstChildElement());
+
+            Scheduler.get().scheduleFinally(new Command() {
+                @Override
+                public void execute() {
+                    List<ComponentConnector> childComponents = ((HasComponentsConnector) ConnectorMap
+                            .get(client).getConnector(this)).getChildComponents();
+                    if (!childComponents.isEmpty()) {
+                        LayoutManager layoutManager = getLayoutManager();
+                        layoutManager.setNeedsMeasure(childComponents.get(0));
+                        layoutManager.layoutNow();
+                    }
+                }
+            });                    
         }
     }
 
