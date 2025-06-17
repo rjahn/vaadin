@@ -5,7 +5,7 @@
     <parent>
         <groupId>at.ganzleicht.vaadin</groupId>
         <artifactId>vaadin-test</artifactId>
-        <version>9.1.2</version>
+        <version>9.1.3</version>
         <relativePath>../..</relativePath>
     </parent>
     <artifactId>vaadin-test-generic-integration</artifactId>

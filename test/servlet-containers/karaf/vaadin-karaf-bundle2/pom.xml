@@ -7,7 +7,7 @@
         <groupId>at.ganzleicht.vaadin</groupId>
         <artifactId>vaadin-test-karaf</artifactId>
         <relativePath>..</relativePath>
-        <version>9.1.2</version>
+        <version>9.1.3</version>
     </parent>
     <artifactId>vaadin-karaf-bundle2</artifactId>
     <packaging>jar</packaging>
