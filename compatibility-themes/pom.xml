@@ -103,6 +103,7 @@
                 <configuration>
                     <compressTheme>true</compressTheme>
                     <warSourceDirectory>${project.build.outputDirectory}</warSourceDirectory>
+                    <extraJvmArgs>-Dvaadin.client-compiler.offline=true</extraJvmArgs>
                 </configuration>
                 <executions>
                     <execution>

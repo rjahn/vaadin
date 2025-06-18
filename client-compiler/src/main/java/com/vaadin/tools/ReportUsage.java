@@ -84,6 +84,8 @@ public class ReportUsage {
             try {
                 long lastPingTime = Long.parseLong(lastPing);
                 if (currentTimeMillis < lastPingTime + ONE_DAY) {
+		    System.out.println("===> skip usage report (delay)");
+
                     return;
                 }
             } catch (NumberFormatException e) {

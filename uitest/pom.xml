@@ -252,7 +252,7 @@
                     <webappDirectory>${project.build.outputDirectory}/VAADIN/widgetsets</webappDirectory>
                     <persistentunitcachedir>${project.build.directory}/gwt-unitCache</persistentunitcachedir>
                     <checkAssertions>true</checkAssertions>
-                    <extraJvmArgs>-Xmx1G</extraJvmArgs>
+                    <extraJvmArgs>-Xmx1G -Dvaadin.client-compiler.offline=true</extraJvmArgs>
                 </configuration>
                 <executions>
                     <execution>
