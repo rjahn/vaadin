@@ -40,18 +40,17 @@
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-elemental</artifactId>
-            
-		    <exclusions>
-		      <exclusion>
-		        <groupId>com.google.gwt</groupId>
-		        <artifactId>gwt-user</artifactId>
-		      </exclusion>
-		    </exclusions>            
+	    <exclusions>
+		<exclusion>
+		    <groupId>com.google.gwt</groupId>
+		    <artifactId>gwt-user</artifactId>
+		</exclusion>
+	    </exclusions>            
         </dependency>
         <dependency>
             <groupId>org.gwtproject</groupId>
             <artifactId>gwt-user</artifactId>
-            <version>2.12.2</version>
+            <version>${vaadin.gwt.version}</version>
         </dependency>
         
     </dependencies>
