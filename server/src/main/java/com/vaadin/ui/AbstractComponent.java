@@ -546,7 +546,7 @@ public abstract class AbstractComponent extends AbstractClientConnector
         this.parent = parent;
 
         // Send attach event if the component is now attached
-        if (isAttached()) {
+        if (parent != null && parent.isAttached()) {
             attach();
         }
 

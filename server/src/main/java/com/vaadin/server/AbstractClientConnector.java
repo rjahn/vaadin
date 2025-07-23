@@ -95,6 +95,8 @@ public abstract class AbstractClientConnector
 
     private ErrorHandler errorHandler = null;
 
+    /** whether the connector is attached. */
+    private boolean attached = false;
     /**
      * Static cache mapping AbstractClientConnector classes to their respective
      * ShareState classes. Using WeakHashMap since entries are recalculated on
@@ -613,7 +615,8 @@ public abstract class AbstractClientConnector
      */
     @Override
     public boolean isAttached() {
-        return getSession() != null;
+        return attached;
+        //return getSession() != null;
     }
 
     @Override
@@ -625,6 +628,8 @@ public abstract class AbstractClientConnector
         for (ClientConnector connector : getAllChildrenIterable(this)) {
             connector.attach();
         }
+
+        attached = true;
 
         fireEvent(new AttachEvent(this));
     }
@@ -646,6 +651,8 @@ public abstract class AbstractClientConnector
         fireEvent(new DetachEvent(this));
 
         getUI().getConnectorTracker().unregisterConnector(this);
+        
+        attached = false;
     }
 
     @Override
