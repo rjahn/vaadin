@@ -107,7 +107,7 @@ public class Upload extends AbstractComponent
      */
     private LinkedHashSet<ProgressListener> progressListeners;
 
-    private boolean interrupted = false;
+    private volatile boolean interrupted = false;
 
     private boolean notStarted;
 

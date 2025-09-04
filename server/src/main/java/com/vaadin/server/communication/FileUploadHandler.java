@@ -551,6 +551,9 @@ public class FileUploadHandler implements RequestHandler {
             session.lock();
             try {
                 streamVariable.streamingStarted(startedEvent);
+                if (streamVariable.isInterrupted()) {
+                    throw new UploadInterruptedException();
+                }
                 out = streamVariable.getOutputStream();
                 listenProgress = streamVariable.listenProgress();
             } finally {
