@@ -419,9 +419,7 @@ public abstract class BootstrapHandler extends SynchronizedRequestHandler {
 
             setupMainDiv(context);
 
-            BootstrapFragmentResponse fragmentResponse = context
-                    .getBootstrapResponse();
-            session.modifyBootstrapResponse(fragmentResponse);
+            modifyBootstrapResponse(session, context);
 
             String html = getBootstrapHtml(context);
 
@@ -433,7 +431,15 @@ public abstract class BootstrapHandler extends SynchronizedRequestHandler {
         return true;
     }
 
-    private String getBootstrapHtml(BootstrapContext context) {
+    protected void modifyBootstrapResponse(VaadinSession session, BootstrapContext context) {
+        session.modifyBootstrapResponse(context.getBootstrapResponse());
+    }
+    
+    protected void modifyBootstrapPageResponse(VaadinSession session, BootstrapPageResponse pageResponse) {
+        session.modifyBootstrapResponse(pageResponse);
+    }
+
+    protected String getBootstrapHtml(BootstrapContext context) {
         VaadinRequest request = context.getRequest();
         VaadinResponse response = context.getResponse();
         VaadinService vaadinService = request.getService();
@@ -455,7 +461,8 @@ public abstract class BootstrapHandler extends SynchronizedRequestHandler {
             }
 
             setupStandaloneDocument(context, pageResponse);
-            context.getSession().modifyBootstrapResponse(pageResponse);
+            
+            modifyBootstrapPageResponse(context.getSession(), pageResponse);
 
             sendBootstrapHeaders(response, headers);
 
@@ -473,7 +480,7 @@ public abstract class BootstrapHandler extends SynchronizedRequestHandler {
         }
     }
 
-    private void sendBootstrapHeaders(VaadinResponse response,
+    protected void sendBootstrapHeaders(VaadinResponse response,
             Map<String, Object> headers) {
         Set<Entry<String, Object>> entrySet = headers.entrySet();
         for (Entry<String, Object> header : entrySet) {
@@ -490,7 +497,7 @@ public abstract class BootstrapHandler extends SynchronizedRequestHandler {
         }
     }
 
-    private void writeBootstrapPage(VaadinResponse response, String html)
+    protected void writeBootstrapPage(VaadinResponse response, String html)
             throws IOException {
         response.setContentType(
                 ApplicationConstants.CONTENT_TYPE_TEXT_HTML_UTF_8);
@@ -500,7 +507,7 @@ public abstract class BootstrapHandler extends SynchronizedRequestHandler {
         }
     }
 
-    private void setupStandaloneDocument(BootstrapContext context,
+    protected void setupStandaloneDocument(BootstrapContext context,
             BootstrapPageResponse response) {
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Pragma", "no-cache");
@@ -640,7 +647,7 @@ public abstract class BootstrapHandler extends SynchronizedRequestHandler {
      *
      * @throws IOException
      */
-    private void setupMainDiv(BootstrapContext context) throws IOException {
+    protected void setupMainDiv(BootstrapContext context) throws IOException {
         String style = getMainDivStyle(context);
 
         /*- Add classnames;

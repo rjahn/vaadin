@@ -184,6 +184,15 @@ public class XhrConnection {
     };
 
     /**
+     * Creates a new request builder.
+     *
+     * @return the new request builder
+     */
+    protected RequestBuilder createRequestBuilder() {
+        return new RequestBuilder(RequestBuilder.POST, getUri());
+    }
+
+    /**
      * Sends an asynchronous UIDL request to the server using the given URI.
      *
      * @param payload
@@ -192,7 +201,7 @@ public class XhrConnection {
      *             if the request could not be sent
      */
     public void send(JsonObject payload) {
-        RequestBuilder rb = new RequestBuilder(RequestBuilder.POST, getUri());
+        RequestBuilder rb = createRequestBuilder();
 
         addXsrfHeaderFromCookie(rb);
 

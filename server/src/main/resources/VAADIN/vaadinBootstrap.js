@@ -103,6 +103,42 @@
 			}
 
 			log("init application", appId, config);
+
+        		const touchPoints = typeof navigator !== "undefined" && 'maxTouchPoints' in navigator && typeof navigator.maxTouchPoints === 'number' ? navigator.maxTouchPoints : 0;
+        		const touchStart = 'ontouchstart' in window ? true : false;
+
+        		window.vaadin.customHeaders["X-maxTouchPoints"] = "" + touchPoints;
+        		window.vaadin.customHeaders["X-touchStart"] = "" + touchStart;
+
+
+        		var delayedBootstrap = false;
+
+	    		if (typeof navigator !== "undefined") {
+
+			    if ('userAgent' in navigator) {
+				window.vaadin.customHeaders['X-Navigator-UA'] = navigator.userAgent;
+			    }
+	        
+	        	    if ('platform' in navigator) {
+	        		window.vaadin.customHeaders['X-Platform'] = navigator.platform;
+	    		    }
+
+	    		    if ('userAgentData' in navigator) {
+	        		window.vaadin.customHeaders['X-userAgentData'] = JSON.stringify(navigator.userAgentData);
+
+                                if (typeof navigator.userAgentData.getHighEntropyValues === "function") {
+            			    delayedBootstrap = true;
+
+            			    //later if available
+            			    navigator.userAgentData.getHighEntropyValues(["platform", "platformVersion", "architecture", "model", 
+                	                                            		  "uaFullVersion", "bitness", "formFactor", "fullVersionList"])
+                		    .then(function(data) { window.vaadin.customHeaders['X-userAgentData'] = JSON.stringify(data); })
+                    		    .finally(() => { 
+                   			bootstrapAppNow();
+                		    });
+                		}
+	    		    }
+			}
 			
 			window.vaadin.clients[testbenchId] = {
 					isActive: function() {
@@ -194,6 +230,12 @@
 				};
 				// send parameters as POST data
 				r.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+                //custom headers
+				for (const key in window.vaadin.customHeaders) {
+                    r.setRequestHeader(key, window.vaadin.customHeaders[key]);
+				}
+
 				r.send(params);
 				
 				log('sending request to ', url);
@@ -244,15 +286,23 @@
 					}
 				}
 			};
-			bootstrapApp(true);
 
-			if (getConfig("debug")) {
-				// TODO debug state is now global for the entire page, but should somehow only be set for the current application  
-				window.vaadin.debug = true;
+			var bootstrapAppNow = function() {
+				bootstrapApp(true);
+
+			    if (getConfig("debug")) {
+				    // TODO debug state is now global for the entire page, but should somehow only be set for the current application  
+				    window.vaadin.debug = true;
+			    }
+			};
+
+			if (!delayedBootstrap) {
+			    bootstrapAppNow();
 			}
 			
 			return app;
 		},
+		customHeaders: {},
 		clients: {},
 		getAppIds: function() {
 			var ids = [ ];
