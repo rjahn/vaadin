@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,7 +43,7 @@ public final class BeanUtil implements Serializable {
     }
 
     /**
-     * Returns the property descriptors of a class or an interface.
+     * Returns the property descriptors of a class, a record, or an interface.
      *
      * For an interface, superinterfaces are also iterated as Introspector does
      * not take them into account (Oracle Java bug 4275879), but in that case,
@@ -66,23 +67,57 @@ public final class BeanUtil implements Serializable {
      */
     public static List<PropertyDescriptor> getBeanPropertyDescriptors(
             final Class<?> beanType) throws IntrospectionException {
-        // Oracle bug 4275879: Introspector does not consider superinterfaces of
-        // an interface
-        if (beanType.isInterface()) {
+        List<PropertyDescriptor> descriptorsWithDuplicates = internalGetBeanPropertyDescriptors(
+                beanType);
+
+        // As we scan for default methods, we might get duplicates
+        // for the same property, so we need to remove them.
+        // We prefer to keep a class property over an interface
+        // property.
+        LinkedHashMap<String, PropertyDescriptor> descriptors = new LinkedHashMap<>();
+        for (PropertyDescriptor descriptor : descriptorsWithDuplicates) {
+            String name = descriptor.getName();
+            if (descriptors.containsKey(name)) {
+                PropertyDescriptor existing = descriptors.get(name);
+                // If the existing descriptor is from a class, keep it
+                // otherwise replace it with the new one.
+                if (existing.getReadMethod() != null && !existing
+                        .getReadMethod().getDeclaringClass().isInterface()) {
+                    continue;
+                }
+            }
+            descriptors.put(name, descriptor);
+        }
+
+        return new ArrayList<>(descriptors.values());
+    }
+
+    // see https://github.com/vaadin/flow/pull/21836
+    private static List<PropertyDescriptor> internalGetBeanPropertyDescriptors(
+            Class<?> beanType) throws IntrospectionException {
+/*
+        if (beanType.isRecord()) {
             List<PropertyDescriptor> propertyDescriptors = new ArrayList<>();
 
-            for (Class<?> cls : beanType.getInterfaces()) {
-                propertyDescriptors.addAll(getBeanPropertyDescriptors(cls));
+            for (RecordComponent component : beanType.getRecordComponents()) {
+                propertyDescriptors.add(new PropertyDescriptor(
+                        component.getName(), component.getAccessor(), null));
             }
-
-            BeanInfo info = Introspector.getBeanInfo(beanType);
-            propertyDescriptors.addAll(getPropertyDescriptors(info));
-
             return propertyDescriptors;
-        } else {
-            BeanInfo info = Introspector.getBeanInfo(beanType);
-            return getPropertyDescriptors(info);
         }
+*/        
+        // Introspector does not consider superinterfaces of
+        // an interface nor does it consider default methods of interfaces.
+        List<PropertyDescriptor> propertyDescriptors = new ArrayList<>();
+
+        for (Class<?> cls : beanType.getInterfaces()) {
+            propertyDescriptors.addAll(internalGetBeanPropertyDescriptors(cls));
+        }
+
+        BeanInfo info = Introspector.getBeanInfo(beanType);
+        propertyDescriptors.addAll(getPropertyDescriptors(info));
+
+        return propertyDescriptors;
     }
 
     /**

@@ -37,7 +37,7 @@
         <vaadin.sass.version>0.9.13</vaadin.sass.version>
 
         <!-- Note that this should be kept in sync with the class Constants -->
-        <atmosphere.runtime.version>2.4.30.vaadin7</atmosphere.runtime.version>
+        <atmosphere.runtime.version>2.4.30.vaadin9</atmosphere.runtime.version>
         <atmosphere.client.version>2.3.9.vaadin5</atmosphere.client.version>
 
         <!-- OSGi -->
