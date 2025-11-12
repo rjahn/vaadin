@@ -370,6 +370,13 @@
 
 			// Time zone offset
 			params += '&v-tzo=' + tzo1;
+
+            // Time zone id (older browsers don't support it)
+            try {
+                params += '&v-tzid=' + encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone);
+            } catch (err) {
+
+            }
 			
 			// DST difference
 			params += '&v-dstd=' + dstDiff;
@@ -407,8 +414,15 @@
 						|| navigator.msMaxTouchPoints;
 			}
 
+            //same check as via header
+			if (typeof navigator !== "undefined" && 'maxTouchPoints' in navigator && typeof navigator.maxTouchPoints === 'number') {
+				params += '&v-mtp=' + navigator.maxTouchPoints;
+			} else {
+				params += '&v-mtp=-1';
+			}
+
 			if (supportsTouch) {
-				params += "&v-td=1";
+				params += '&v-td=1';
 			}
    	        
 	        return params;

@@ -17,7 +17,9 @@
 package com.vaadin.server;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -32,15 +34,19 @@ import com.vaadin.shared.VBrowserDetails;
  */
 public class WebBrowser implements Serializable {
 
+    private List<Runnable> listeners;
+
     private int screenHeight = -1;
     private int screenWidth = -1;
     private String browserApplication = null;
     private Locale locale;
     private String address;
     private boolean secureConnection;
+    private String timeZoneId;
     private int timezoneOffset = 0;
     private int rawTimezoneOffset = 0;
     private int dstSavings;
+    private int maxTouchPoints = -1;
     private boolean dstInEffect;
     private boolean touchDevice;
 
@@ -252,6 +258,10 @@ public class WebBrowser implements Serializable {
      *         Linux or if no information on the browser is present
      */
     public boolean isLinux() {
+        if (browserDetails == null) {
+            return false;
+        }
+    	
         return browserDetails.isLinux();
     }
 
@@ -262,6 +272,10 @@ public class WebBrowser implements Serializable {
      *         using Mac OS X or if no information on the browser is present
      */
     public boolean isMacOSX() {
+        if (browserDetails == null) {
+            return false;
+        }
+    	
         return browserDetails.isMacOSX();
     }
 
@@ -272,6 +286,10 @@ public class WebBrowser implements Serializable {
      *         Windows or if no information on the browser is present
      */
     public boolean isWindows() {
+        if (browserDetails == null) {
+            return false;
+        }
+    	
         return browserDetails.isWindows();
     }
 
@@ -284,6 +302,10 @@ public class WebBrowser implements Serializable {
      * @since 7.3.2
      */
     public boolean isWindowsPhone() {
+        if (browserDetails == null) {
+            return false;
+        }
+    	
         return browserDetails.isWindowsPhone();
     }
 
@@ -294,6 +316,10 @@ public class WebBrowser implements Serializable {
      *         if no information on the browser is present
      */
     public boolean isAndroid() {
+        if (browserDetails == null) {
+            return false;
+        }
+    	
         return browserDetails.isAndroid();
     }
 
@@ -304,6 +330,10 @@ public class WebBrowser implements Serializable {
      *         information on the browser is present
      */
     public boolean isIOS() {
+        if (browserDetails == null) {
+            return false;
+        }
+    	
         return browserDetails.isIOS();
     }
 
@@ -315,6 +345,10 @@ public class WebBrowser implements Serializable {
      * @since 7.3.3
      */
     public boolean isIPhone() {
+        if (browserDetails == null) {
+            return false;
+        }
+    	
         return browserDetails.isIPhone();
     }
 
@@ -326,6 +360,10 @@ public class WebBrowser implements Serializable {
      * @since 7.3.3
      */
     public boolean isIPad() {
+        if (browserDetails == null) {
+            return false;
+        }
+    	
         return browserDetails.isIPad();
     }
 
@@ -337,6 +375,10 @@ public class WebBrowser implements Serializable {
      * @since 8.1.1
      */
     public boolean isChromeOS() {
+        if (browserDetails == null) {
+            return false;
+        }
+    	
         return browserDetails.isChromeOS();
     }
 
@@ -373,6 +415,15 @@ public class WebBrowser implements Serializable {
     public int getRawTimezoneOffset() {
         return rawTimezoneOffset;
     }
+    
+    /**
+     * Returns the browser-reported TimeZone Id.
+     *
+     * @return the timezone id or <code>null</code>.
+     */ 
+    public String getTimezoneId() {
+        return timeZoneId;
+    }    
 
     /**
      * Returns the offset in milliseconds between the browser's GMT TimeZone and
@@ -394,6 +445,15 @@ public class WebBrowser implements Serializable {
      */
     public boolean isDSTInEffect() {
         return dstInEffect;
+    }
+ 
+    /**
+     * Gets the maximum touch points.
+     * 
+     * @return the number of touch points or <code>-1</code> if not supported
+     */
+    public int getMaxTouchPoints() {
+        return maxTouchPoints;
     }
 
     /**
@@ -428,7 +488,7 @@ public class WebBrowser implements Serializable {
     public boolean isTouchDevice() {
         return touchDevice;
     }
-
+    
     /**
      * For internal use by VaadinServlet/VaadinPortlet only. Updates all
      * properties in the class according to the given information.
@@ -445,13 +505,16 @@ public class WebBrowser implements Serializable {
      *            the difference between the raw TimeZone and DST in minutes
      * @param dstInEffect
      *            is DST currently active in the region or not?
+     * @param tzId
+     *            the TimeZone ID           
      * @param curDate
      *            the current date in milliseconds since the epoch
      * @param touchDevice
+     *            whether the device is a touch device
      */
-    void updateClientSideDetails(String sw, String sh, String tzo, String rtzo,
-            String dstSavings, String dstInEffect, String curDate,
-            boolean touchDevice) {
+    private void updateClientSideDetails(String sw, String sh, String tzo, String rtzo,
+							             String dstSavings, String dstInEffect, String curDate, String tzId,
+							             String maxTouchPoints, boolean touchDevice) {
         if (sw != null) {
             try {
                 screenHeight = Integer.parseInt(sh);
@@ -484,6 +547,11 @@ public class WebBrowser implements Serializable {
                 this.dstSavings = 0; // default no savings
             }
         }
+        if (tzId == null || "undefined".equals(tzId)) {
+            timeZoneId = null;
+        } else {
+            timeZoneId = tzId;
+        }        
         if (dstInEffect != null) {
             this.dstInEffect = Boolean.parseBoolean(dstInEffect);
         }
@@ -495,6 +563,14 @@ public class WebBrowser implements Serializable {
                 clientServerTimeDelta = 0;
             }
         }
+        if (maxTouchPoints != null) {
+            try {
+                this.maxTouchPoints = Integer.parseInt(maxTouchPoints);
+            } catch (NumberFormatException e) {
+                this.maxTouchPoints = -1;
+            }
+        }        
+        
         this.touchDevice = touchDevice;
 
     }
@@ -521,13 +597,26 @@ public class WebBrowser implements Serializable {
 
         if (request.getParameter("v-sw") != null) {
             updateClientSideDetails(request.getParameter("v-sw"),
-                    request.getParameter("v-sh"), request.getParameter("v-tzo"),
+                    request.getParameter("v-sh"), 
+                    request.getParameter("v-tzo"),
                     request.getParameter("v-rtzo"),
                     request.getParameter("v-dstd"),
                     request.getParameter("v-dston"),
                     request.getParameter("v-curdate"),
+                    request.getParameter("v-tzid"),
+                    request.getParameter("v-mtp"),
                     request.getParameter("v-td") != null);
         }
+        
+        if (agent != null) {
+            if (listeners != null) {
+                for (int i = 0, cnt = listeners.size(); i < cnt; i++) {
+                    listeners.get(i).run();
+                }
+                
+                listeners = null;
+            }
+        }        
     }
 
     /**
@@ -566,4 +655,25 @@ public class WebBrowser implements Serializable {
         return browserDetails.isEs6Supported();
 
     }
+    
+    /**
+     * This method can be used to get a "ping" about "browser details are available".
+     * It notifies the listener immediate if details are already available or "later"
+     * if client sends details.
+     * 
+     * @param listener the listener
+     */
+    public void listen(Runnable listener) {
+        if (browserDetails != null) {
+            listener.run();
+            return;
+        }
+
+        if (listeners == null) {
+            listeners = new ArrayList<Runnable>();
+        }
+        
+        listeners.add(listener);
+    }
+    
 }

@@ -19,6 +19,8 @@ import java.util.Objects;
 
 import com.google.gwt.event.dom.client.HasAllFocusHandlers;
 import com.google.gwt.user.client.ui.ListBox;
+import com.vaadin.client.ui.aria.AriaHelper;
+import com.vaadin.client.ui.aria.HandlesAriaCaption;
 import com.vaadin.client.widgets.FocusableFlowPanelComposite;
 import com.vaadin.shared.ui.nativeselect.NativeSelectState;
 
@@ -28,7 +30,7 @@ import com.vaadin.shared.ui.nativeselect.NativeSelectState;
  * @author Vaadin Ltd.
  */
 public class VNativeSelect extends FocusableFlowPanelComposite
-        implements HasAllFocusHandlers {
+        implements HasAllFocusHandlers, HandlesAriaCaption {
 
     private final ListBox listBox = new ListBox();
 
@@ -110,6 +112,11 @@ public class VNativeSelect extends FocusableFlowPanelComposite
         }
         super.setHeight(height);
     }
+    
+    @Override
+    public void bindAriaCaption(com.google.gwt.user.client.Element captionElement) {
+        AriaHelper.bindCaption(getListBox(), captionElement);
+    }
 
     /**
      * Sets the number of items that are visible. If only one item is visible,
@@ -133,5 +140,5 @@ public class VNativeSelect extends FocusableFlowPanelComposite
     public int getVisibleItemCount() {
         return getListBox().getVisibleItemCount();
     }
-
+    
 }

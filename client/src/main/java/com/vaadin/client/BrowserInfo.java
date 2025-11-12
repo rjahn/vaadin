@@ -365,6 +365,21 @@ public class BrowserInfo {
     /*-{
     	return $wnd.screen.height;
     }-*/;
+    
+    /**
+     * Gets the number of maximum touch points. This can be used to detect mobile devices, but also
+     * desktop devcies will have touch points, e.g. browsers in mobile preview mode. Usually the preview
+     * only supports 2 touch points. There are external touch devices which usually return 10 touch points.
+     * Mobile devices usually have 5 touch points.
+     * 
+     * @return the number of touch points or <code>-1</code> if property is not available
+     */
+    public native int getMaxTouchPoints() /*-{
+    	if ($wnd.navigator.maxTouchPoints) {
+    		return $wnd.navigator.maxTouchPoints;
+    	}
+    	return -1;
+    }-*/;    
 
     /**
      * @return true if the browser runs on a touch based device.
@@ -409,7 +424,10 @@ public class BrowserInfo {
      * @return true if the browser is run on iOS, false otherwise
      */
     public boolean isIOS() {
-        return browserDetails.isIOS();
+    	int iPoints = getMaxTouchPoints();
+    	
+        return browserDetails.isIOS() 
+        	   || (browserDetails.isMacOSX() && iPoints > 2 && iPoints <= 5);
     }
 
     /**
