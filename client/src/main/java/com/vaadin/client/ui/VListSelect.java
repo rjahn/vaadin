@@ -22,6 +22,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
@@ -29,6 +30,10 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.vaadin.client.FastStringSet;
 import com.vaadin.client.Focusable;
 import com.vaadin.client.connectors.AbstractMultiSelectConnector.MultiSelectWidget;
+import com.vaadin.client.ui.aria.AriaHelper;
+import com.vaadin.client.ui.aria.HandlesAriaCaption;
+import com.vaadin.client.ui.aria.HandlesAriaInvalid;
+import com.vaadin.client.ui.aria.HandlesAriaRequired;
 import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.listselect.ListSelectState;
 
@@ -40,7 +45,8 @@ import elemental.json.JsonObject;
  * @author Vaadin Ltd
  */
 public class VListSelect extends Composite
-        implements Field, Focusable, HasEnabled, MultiSelectWidget {
+        implements Field, Focusable, HasEnabled, MultiSelectWidget, 
+                   HandlesAriaCaption, HandlesAriaInvalid, HandlesAriaRequired {
 
     private List<BiConsumer<Set<String>, Set<String>>> selectionChangeListeners = new ArrayList<>();
 
@@ -253,4 +259,19 @@ public class VListSelect extends Composite
     public void focus() {
         select.setFocus(true);
     }
+    
+       @Override
+    public void bindAriaCaption(Element captionElement) {
+        AriaHelper.bindCaption(select, captionElement);
+    }
+
+    @Override
+    public void setAriaRequired(boolean required) {
+        AriaHelper.handleInputRequired(select, required);
+    }
+
+    @Override
+    public void setAriaInvalid(boolean invalid) {
+        AriaHelper.handleInputInvalid(select, invalid);
+    } 
 }

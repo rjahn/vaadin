@@ -18,8 +18,12 @@ package com.vaadin.event;
 
 import java.io.Serializable;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
+
 import com.vaadin.server.Resource;
 import com.vaadin.shared.Registration;
+import com.vaadin.shared.ui.ContentMode;
 
 /**
  * Implements the action framework. This class contains subinterfaces for action
@@ -43,17 +47,30 @@ public class Action implements Serializable {
     private Resource icon = null;
 
     /**
-     * Constructs a new action with the given caption.
+     * Constructs a new action with the given caption. 
      *
-     * @param caption
-     *            the caption for the new action.
+     * @param caption 
+     * 			  the caption for the new action.
      */
     public Action(String caption) {
-        this.caption = caption;
+        this(caption, ContentMode.TEXT, null);
     }
 
     /**
-     * Constructs a new action with the given caption string and icon.
+     * Constructs a new action with the given caption and caption content mode.
+     * 
+     * @param caption
+     *            the caption for the new action.
+     * @param contentMode 
+     *            the content mode
+     * @see Action#setCaption(String, ContentMode)
+     */
+    public Action(String caption, ContentMode contentMode) {
+        this(caption, contentMode, null);
+    }
+
+    /**
+     * Constructs a new action with the given caption string and icon. 
      *
      * @param caption
      *            the caption for the new action.
@@ -61,8 +78,22 @@ public class Action implements Serializable {
      *            the icon for the new action.
      */
     public Action(String caption, Resource icon) {
-        this.caption = caption;
-        this.icon = icon;
+        this(caption, ContentMode.TEXT, icon);
+    }
+
+    /**
+     * Constructs a new action with the given caption, caption content mode and
+     * icon. 
+     *
+     * @param caption
+     *            the caption for the new action.
+     * @param contentMode
+     *            the content mode
+     * @see Action#setCaption(String, ContentMode)
+     */
+    public Action(String caption, ContentMode contentMode, Resource icon) {
+        setCaption(caption, contentMode);
+        setIcon(icon);
     }
 
     /**
@@ -87,8 +118,7 @@ public class Action implements Serializable {
      * An Action that implements this interface can be added to an
      * Action.Notifier (or NotifierProxy) via the <code>addAction()</code>
      * -method, which in many cases is easier than implementing the
-     * Action.Handler interface.<br/>
-     *
+     * Action.Handler interface.<br>
      */
     @FunctionalInterface
     public interface Listener extends Serializable {
@@ -99,7 +129,6 @@ public class Action implements Serializable {
      * Action.Containers implementing this support an easier way of adding
      * single Actions than the more involved Action.Handler. The added actions
      * must be Action.Listeners, thus handling the action themselves.
-     *
      */
     public interface Notifier extends Container {
         public <T extends Action & Action.Listener> void addAction(T action);
@@ -178,7 +207,7 @@ public class Action implements Serializable {
     public interface Container extends Serializable {
 
         /**
-         * Registers a new action handler for this container
+         * Registers a new action handler for this container.
          *
          * @param actionHandler
          *            the new handler to be added.
@@ -202,7 +231,38 @@ public class Action implements Serializable {
      *            the caption to set.
      */
     public void setCaption(String caption) {
-        this.caption = caption;
+        setCaption(caption, ContentMode.TEXT);
+    }
+
+    /**
+     * Sets the caption with specific content mode. Be careful with {@link ContentMode#HTML}
+     * because it will be set directly into client element.
+     * 
+     * @param caption
+     *            the caption to set.
+     * @param contentMode 
+     *            the content mode.
+     */
+    public void setCaption(String caption, ContentMode contentMode) {
+        if (caption == null) {
+            this.caption = null;
+            return;
+        }
+
+        String captionToUse;
+        
+        switch (contentMode) {
+	        case PREFORMATTED:
+	            captionToUse = Jsoup.parse(caption).text();
+	            break;
+	        case HTML:
+	        	captionToUse = caption;
+	            break;
+	        default: 
+	            captionToUse = Jsoup.clean(caption, Safelist.none());
+        }
+
+        this.caption = captionToUse;
     }
 
     /**

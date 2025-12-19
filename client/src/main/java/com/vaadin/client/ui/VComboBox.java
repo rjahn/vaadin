@@ -26,6 +26,8 @@ import java.util.Set;
 
 import com.google.gwt.animation.client.AnimationScheduler;
 import com.google.gwt.aria.client.Roles;
+import com.google.gwt.aria.client.SelectedValue;
+import com.google.gwt.aria.client.Id;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
@@ -377,7 +379,7 @@ public class VComboBox extends Composite implements Field, KeyDownHandler,
             DOM.sinkEvents(root, Event.ONMOUSEDOWN | Event.ONMOUSEWHEEL);
             addCloseHandler(this);
 
-            Roles.getListRole().set(getElement());
+            Roles.getListboxRole().set(getElement());
 
             setPreviewingAllNativeEvents(true);
         }
@@ -1076,16 +1078,26 @@ public class VComboBox extends Composite implements Field, KeyDownHandler,
 
             clearItems();
             final Iterator<ComboBoxSuggestion> it = suggestions.iterator();
+            
+            Id[] ids = new Id[suggestions.size()];
+            int i = 0;
+            
             boolean isFirstIteration = true;
+            
             while (it.hasNext()) {
                 final ComboBoxSuggestion suggestion = it.next();
                 final MenuItem mi = new MenuItem(suggestion.getDisplayString(),
                         true, suggestion);
+                
+                ids[i++] = Id.of(mi.getElement());
+                
                 String style = suggestion.getStyle();
                 if (style != null) {
                     mi.addStyleName("v-filterselect-item-" + style);
                 }
-                Roles.getListitemRole().set(mi.getElement());
+                
+                Roles.getOptionRole().set(mi.getElement());
+                Roles.getOptionRole().setAriaSelectedState(mi.getElement(), SelectedValue.FALSE);
 
                 WidgetUtil.sinkOnloadForImages(mi.getElement());
 
@@ -1116,7 +1128,34 @@ public class VComboBox extends Composite implements Field, KeyDownHandler,
                 }
                 isFirstIteration = false;
             }
+            
+            if (i > 0) 
+            {
+                // The list of options is not a direct sub, so set the aria owns property to the right element
+                Roles.getListboxRole().setAriaOwnsProperty(suggestionPopup.getElement(), ids);
+            }
         }
+        
+        @Override
+        public void selectItem(final MenuItem item) 
+        {
+            super.selectItem(item);
+            
+            // aria should "know" which item is currently selected
+            for (MenuItem mi : getItems()) 
+            {
+                if (mi == item) 
+                {
+                    Roles.getOptionRole().setAriaSelectedState(mi.getElement(), SelectedValue.TRUE);
+                    
+                    Roles.getListboxRole().setAriaActivedescendantProperty(suggestionPopup.getElement(), Id.of(mi.getElement()));
+                } 
+                else 
+                {
+                    Roles.getOptionRole().setAriaSelectedState(mi.getElement(), SelectedValue.FALSE);
+                }
+            }
+        }        
 
         /**
          * Create/select a suggestion based on the used entered string. This
@@ -1722,6 +1761,9 @@ public class VComboBox extends Composite implements Field, KeyDownHandler,
         Roles.getButtonRole().setAriaHiddenState(popupOpener.getElement(),
                 true);
         Roles.getButtonRole().set(popupOpener.getElement());
+        Roles.getComboboxRole().setAriaHaspopupProperty(panel.getElement(), true);
+        Roles.getComboboxRole().setAriaOwnsProperty(panel.getElement(), Id.of(suggestionPopup.getElement()));
+        Roles.getComboboxRole().setAriaControlsProperty(panel.getElement(), Id.of(suggestionPopup.getElement()));
 
         panel.add(tb);
         panel.add(popupOpener);
