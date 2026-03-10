@@ -738,7 +738,13 @@ public abstract class ScrollbarBundle implements DeferredWorker {
                     invisibleScrollbarTemporaryResizer.show();
                 }
             });
-            root.getStyle().setVisibility(Visibility.HIDDEN);
+            
+            if (BrowserInfo.get().isFirefox()) {
+                root.getStyle().setVisibility(Visibility.VISIBLE);
+                px = 10;
+            } else {
+                root.getStyle().setVisibility(Visibility.HIDDEN);   
+            }            
         } else {
             Event.sinkEvents(root, 0);
             Event.setEventListener(root, null);
