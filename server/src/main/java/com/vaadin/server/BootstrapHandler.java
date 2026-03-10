@@ -387,6 +387,14 @@ public abstract class BootstrapHandler extends SynchronizedRequestHandler {
     @Override
     public boolean synchronizedHandleRequest(VaadinSession session,
             VaadinRequest request, VaadinResponse response) throws IOException {
+        String sReqPathInfo = request.getPathInfo();
+
+        if (sReqPathInfo != null && sReqPathInfo.startsWith("/VAADIN")) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Context path not allowed");
+
+            return true;
+        }
+
         try {
             List<UIProvider> uiProviders = session.getUIProviders();
 
