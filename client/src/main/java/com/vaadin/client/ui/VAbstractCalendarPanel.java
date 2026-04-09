@@ -144,7 +144,8 @@ public abstract class VAbstractCalendarPanel<R extends Enum<R>>
                 return;
             }
 
-            Date newDate = ((Day) event.getSource()).getDate();
+            Date newDate = ((Day)event.getSource()).getDate();
+            
             if (!isDateInsideRange(newDate,
                     getResolution(VAbstractCalendarPanel.this::isDay))) {
                 return;
@@ -225,6 +226,14 @@ public abstract class VAbstractCalendarPanel<R extends Enum<R>>
     public void setParentField(VDateField<R> parent) {
         this.parent = parent;
     }
+    
+    private void setTabIndex(Day day, int tabIndex) {
+        Element parentElement = day.getElement().getParentElement();
+        
+        if (parentElement != null) {
+            Roles.getButtonRole().setTabindexExtraAttribute(parentElement, tabIndex);
+        }
+    }
 
     /**
      * Sets the focus to given date in the current view. Used when moving in the
@@ -239,6 +248,7 @@ public abstract class VAbstractCalendarPanel<R extends Enum<R>>
         if (acceptDayFocus()) {
             if (focusedDay != null) {
                 focusedDay.removeStyleDependentName(CN_FOCUSED);
+                setTabIndex(focusedDay, -1);
             }
 
             if (date != null && focusedDate != null) {
@@ -248,10 +258,13 @@ public abstract class VAbstractCalendarPanel<R extends Enum<R>>
                     int cellCount = days.getCellCount(i);
                     for (int j = 0; j < cellCount; j++) {
                         Widget widget = days.getWidget(i, j);
-                        if (widget != null
-                                && widget instanceof VAbstractCalendarPanel.Day) {
-                            Day curday = (Day) widget;
+                        if (widget != null && widget instanceof VAbstractCalendarPanel.Day) {
+                            Day curday = (Day)widget;
+                            
                             if (curday.getDate().equals(date)) {
+                            	setTabIndex(curday, 0);
+                                curday.getElement().getParentElement().focus();
+                                
                                 curday.addStyleDependentName(CN_FOCUSED);
                                 focusedDay = curday;
                                 return;
@@ -350,8 +363,9 @@ public abstract class VAbstractCalendarPanel<R extends Enum<R>>
     private void selectDate(Date date) {
         if (selectedDay != null) {
             selectedDay.removeStyleDependentName(CN_SELECTED);
-            Roles.getGridcellRole()
-                    .removeAriaSelectedState(selectedDay.getElement());
+            setTabIndex(selectedDay, -1);
+            
+            Roles.getGridcellRole().removeAriaSelectedState(selectedDay.getElement());
         }
 
         int rowCount = days.getRowCount();
@@ -363,6 +377,8 @@ public abstract class VAbstractCalendarPanel<R extends Enum<R>>
                         && widget instanceof VAbstractCalendarPanel.Day) {
                     Day curday = (Day) widget;
                     if (curday.getDate().equals(date)) {
+                        setTabIndex(curday, 0);
+                        curday.getElement().getParentElement().focus();
                         curday.addStyleDependentName(CN_SELECTED);
                         selectedDay = curday;
                         Roles.getGridcellRole().setAriaSelectedState(
@@ -850,8 +866,9 @@ public abstract class VAbstractCalendarPanel<R extends Enum<R>>
                     day.addStyleDependentName(CN_OFFMONTH);
                 }
 
-                days.setWidget(weekOfMonth, firstWeekdayColumn + dayOfWeek,
-                        day);
+                days.setWidget(weekOfMonth, firstWeekdayColumn + dayOfWeek, day);
+                setTabIndex(day, -1);
+                
                 Roles.getGridcellRole().set(days.getCellFormatter().getElement(
                         weekOfMonth, firstWeekdayColumn + dayOfWeek));
 
@@ -965,7 +982,9 @@ public abstract class VAbstractCalendarPanel<R extends Enum<R>>
             // If the month changed we need to re-render the calendar
             displayedMonth.setMonth(focusedDate.getMonth());
             displayedMonth.setYear(focusedDate.getYear());
+            
             renderCalendar();
+            focusDay(focusedDate);
         }
     }
 
@@ -1424,6 +1443,8 @@ public abstract class VAbstractCalendarPanel<R extends Enum<R>>
              */
         } else if (shift && keycode == getForwardKey()) {
             focusNextMonth();
+            focusDay(focusedDate);
+            
             return true;
 
             /*
@@ -1431,6 +1452,8 @@ public abstract class VAbstractCalendarPanel<R extends Enum<R>>
              */
         } else if (shift && keycode == getBackwardKey()) {
             focusPreviousMonth();
+            focusDay(focusedDate);
+            
             return true;
 
             /*
@@ -1438,6 +1461,8 @@ public abstract class VAbstractCalendarPanel<R extends Enum<R>>
              */
         } else if (shift && keycode == getPreviousKey()) {
             focusNextYear(1);
+            focusDay(focusedDate);
+            
             return true;
 
             /*
@@ -1445,6 +1470,8 @@ public abstract class VAbstractCalendarPanel<R extends Enum<R>>
              */
         } else if (shift && keycode == getNextKey()) {
             focusPreviousYear(1);
+            focusDay(focusedDate);
+            
             return true;
 
             /*

@@ -18,6 +18,8 @@ package com.vaadin.client.ui;
 
 import java.util.Date;
 
+import com.google.gwt.aria.client.ExpandedValue;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.aria.client.Id;
 import com.google.gwt.aria.client.LiveValue;
 import com.google.gwt.aria.client.Roles;
@@ -149,14 +151,15 @@ public abstract class VAbstractPopupCalendar<PANEL extends VAbstractCalendarPane
                 return true;
             }
         });
+        
+        String popupId = Document.get().createUniqueId();
+        calendar.getElement().setId(popupId);
 
-        // FIXME: Problem is, that the element with the provided id does not
-        // exist yet in html. This is the same problem as with the context menu.
-        // Apply here the same fix (#11795)
-        Roles.getTextboxRole().setAriaControlsProperty(text.getElement(),
-                Id.of(calendar.getElement()));
-        Roles.getButtonRole().setAriaControlsProperty(
-                calendarToggle.getElement(), Id.of(calendar.getElement()));
+        Roles.getComboboxRole().set(getElement());
+        Roles.getCheckboxRole().setAriaHaspopupProperty(getElement(), true);
+        Roles.getComboboxRole().setAriaExpandedState(getElement(), ExpandedValue.FALSE);
+        Roles.getComboboxRole().setAriaControlsProperty(getElement(), Id.of(calendar.getElement()));
+        Roles.getButtonRole().setAriaControlsProperty(calendarToggle.getElement(), Id.of(calendar.getElement()));        
 
         calendar.setSubmitListener(new SubmitListener() {
             @Override
@@ -194,9 +197,6 @@ public abstract class VAbstractPopupCalendar<PANEL extends VAbstractCalendarPane
 
         popup.setWidget(wrapper);
         popup.addCloseHandler(this);
-
-        DOM.setElementProperty(calendar.getElement(), "id",
-                "PID_VAADIN_POPUPCAL");
 
         sinkEvents(Event.ONKEYDOWN);
 
@@ -401,6 +401,8 @@ public abstract class VAbstractPopupCalendar<PANEL extends VAbstractCalendarPane
             popup.setWidth("");
             popup.setHeight("");
             popup.setPopupPositionAndShow(new PopupPositionCallback());
+            
+            Roles.getComboboxRole().setAriaExpandedState(getElement(), ExpandedValue.TRUE);
         } else {
             VConsole.error("Cannot reopen popup, it is already open!");
         }
@@ -551,6 +553,8 @@ public abstract class VAbstractPopupCalendar<PANEL extends VAbstractCalendarPane
         if (open) {
             toggleButtonClosesWithGuarantee = true;
             popup.hide(true);
+            
+            Roles.getComboboxRole().setAriaExpandedState(getElement(), ExpandedValue.FALSE);
         }
     }
 

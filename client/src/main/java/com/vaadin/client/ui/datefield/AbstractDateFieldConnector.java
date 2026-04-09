@@ -15,6 +15,7 @@
  */
 package com.vaadin.client.ui.datefield;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -89,14 +90,20 @@ public abstract class AbstractDateFieldConnector<R extends Enum<R>>
     }
 
     protected Map<R, Integer> getTimeValues(UIDL uidl) {
-        Stream<R> resolutions = getWidget().getResolutions();
-        R resolution = getWidget().getCurrentResolution();
-        return resolutions
-                .collect(Collectors.toMap(Function.identity(),
-                        res -> (resolution.compareTo(res) <= 0)
-                                ? uidl.getIntVariable(
-                                        getWidget().getResolutionVariable(res))
-                                : -1));
+    	VDateField<R> widget = getWidget();
+
+    	R resolution = widget.getCurrentResolution();
+        
+        Map<R, Integer> result = new HashMap<R, Integer>();
+        
+        for (R res : widget.getResolutions().collect(Collectors.toList())) {
+            result.put(res, resolution != null && resolution.compareTo(res) <= 0
+                    ? uidl.getIntVariable(widget.getResolutionVariable(res))
+                    : -1);
+        }
+        
+        return result;        
+        
     }
 
     /**
@@ -109,13 +116,19 @@ public abstract class AbstractDateFieldConnector<R extends Enum<R>>
      * @since 8.1.2
      */
     protected Map<R, Integer> getDefaultValues(UIDL uidl) {
-        Stream<R> resolutions = getWidget().getResolutions();
-        R resolution = getWidget().getCurrentResolution();
-        return resolutions.collect(Collectors.toMap(Function.identity(),
-                res -> (resolution.compareTo(res) <= 0)
-                        ? uidl.getIntVariable("default-"
-                                + getWidget().getResolutionVariable(res))
-                        : -1));
+    	VDateField<R> widget = getWidget();
+    	
+        R resolution = widget.getCurrentResolution();
+
+        Map<R, Integer> result = new HashMap<>();
+        
+        for (R res : widget.getResolutions().collect(Collectors.toList())) {
+            result.put(res, resolution != null && resolution.compareTo(res) <= 0
+                    ? uidl.getIntVariable("default-" + widget.getResolutionVariable(res))
+                    : -1);
+        }
+        
+        return result;        
     }
 
     @SuppressWarnings("unchecked")
