@@ -246,42 +246,45 @@ public class ResponsiveConnector extends AbstractExtensionConnector
                     }
                 };
     
-                // Array of all of the separate selectors in this ruleset
-                var haystack = rule.selectorText.split(",");
+                if (rule.selectorText) {
+                	// Array of all of the separate selectors in this ruleset
+                    var haystack = rule.selectorText.split(",");
+                 
     
-                // IE/Edge parses CSS like .class[attr="val"] into [attr="val"].class so we need to check for both
-                var selectorRegEx = IEOrEdge ? /\[.*\]([\.|#]\S+)/ : /([\.|#]\S+?)\[.*\]/;
-    
-                // Loop all the selectors in this ruleset
-                for(var k = 0, len2 = haystack.length; k < len2; k++) {
-    
-                    // Split the haystack into parts.
-                    var widthRange = haystack[k].match(/\[width-range.*?\]/);
-                    var heightRange = haystack[k].match(/\[height-range.*?\]/);
-                    var selector = haystack[k].match(selectorRegEx);
-    
-                    if (selector != null) {
-                        selector = selector[1];
-    
-                        // Check for width-ranges.
-                        if (widthRange != null) {
-                            var minMax = widthRange[0].match(/\[width-range~?=["|'](.*?)-(.*?)["|']\]/i);
-                            var min = minMax[1];
-                            var max = minMax[2];
-    
-                            pushToCache(widthRanges, selector, min, max);
-                        }
-    
-                        // Check for height-ranges.
-                        if (heightRange != null) {
-                            var minMax = heightRange[0].match(/\[height-range~?=["|'](.*?)-(.*?)["|']\]/i);
-                            var min = minMax[1];
-                            var max = minMax[2];
-    
-                            pushToCache(heightRanges, selector, min, max);
-                        }
-                    }
-                }
+	                // IE/Edge parses CSS like .class[attr="val"] into [attr="val"].class so we need to check for both
+	                var selectorRegEx = IEOrEdge ? /\[.*\]([\.|#]\S+)/ : /([\.|#]\S+?)\[.*\]/;
+	    
+	                // Loop all the selectors in this ruleset
+	                for(var k = 0, len2 = haystack.length; k < len2; k++) {
+	    
+	                    // Split the haystack into parts.
+	                    var widthRange = haystack[k].match(/\[width-range.*?\]/);
+	                    var heightRange = haystack[k].match(/\[height-range.*?\]/);
+	                    var selector = haystack[k].match(selectorRegEx);
+	    
+	                    if (selector != null) {
+	                        selector = selector[1];
+	    
+	                        // Check for width-ranges.
+	                        if (widthRange != null) {
+	                            var minMax = widthRange[0].match(/\[width-range~?=["|'](.*?)-(.*?)["|']\]/i);
+	                            var min = minMax[1];
+	                            var max = minMax[2];
+	    
+	                            pushToCache(widthRanges, selector, min, max);
+	                        }
+	    
+	                        // Check for height-ranges.
+	                        if (heightRange != null) {
+	                            var minMax = heightRange[0].match(/\[height-range~?=["|'](.*?)-(.*?)["|']\]/i);
+	                            var min = minMax[1];
+	                            var max = minMax[2];
+	    
+	                            pushToCache(heightRanges, selector, min, max);
+	                        }
+	                    }
+	                }
+	            }
             }
         }
     
