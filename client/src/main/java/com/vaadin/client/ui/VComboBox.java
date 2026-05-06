@@ -2256,8 +2256,11 @@ public class VComboBox extends Composite implements Field, KeyDownHandler,
             }
             dataReceivedHandler.reactOnInputWhenReady(tb.getText());
             suggestionPopup.hide();
-
-            event.stopPropagation();
+            
+            
+	    //We always want to handle the enter key for jumping to the next editor or
+	    //sending the value
+            //event.stopPropagation();
             break;
         }
 

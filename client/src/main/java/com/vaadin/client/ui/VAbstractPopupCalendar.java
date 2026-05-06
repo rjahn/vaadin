@@ -19,15 +19,17 @@ package com.vaadin.client.ui;
 import java.util.Date;
 
 import com.google.gwt.aria.client.ExpandedValue;
-import com.google.gwt.dom.client.Document;
 import com.google.gwt.aria.client.Id;
 import com.google.gwt.aria.client.LiveValue;
 import com.google.gwt.aria.client.Roles;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
@@ -121,6 +123,15 @@ public abstract class VAbstractPopupCalendar<PANEL extends VAbstractCalendarPane
                 cursorOverCalendarToggleButton = false;
             }
         }, MouseOutEvent.getType());
+        
+        //this code prevents focus on button, to avoid ariaHidden warnings
+        //BUT click event will be called
+        calendarToggle.addDomHandler(new MouseDownHandler() {
+            @Override
+            public void onMouseDown(MouseDownEvent event) {
+                event.preventDefault();
+            }
+        }, MouseDownEvent.getType());        
 
         // -2 instead of -1 to avoid FocusWidget.onAttach to reset it
         calendarToggle.getElement().setTabIndex(-2);
