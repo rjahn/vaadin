@@ -295,10 +295,11 @@ public class ConnectorTracker implements Serializable {
                 + "and that all custom component containers call child.setParent(this) when a child is added and child.setParent(null) when the child is no longer used. "
                 + "See previous log messages for details.";
 
-        Iterator<ClientConnector> iterator = connectorIdToConnector.values()
-                .iterator();
-        GlobalResourceHandler globalResourceHandler = uI.getSession()
-                .getGlobalResourceHandler(false);
+        Iterator<ClientConnector> iterator = connectorIdToConnector.values().iterator();
+        GlobalResourceHandler globalResourceHandler = uI.getSession().getGlobalResourceHandler(false);
+        
+        Map<ClientConnector, Boolean> visibilityCache = new HashMap<>(connectorIdToConnector.size());
+        
         while (iterator.hasNext()) {
             ClientConnector connector = iterator.next();
             assert connector != null;
@@ -319,8 +320,7 @@ public class ConnectorTracker implements Serializable {
                 diffStates.remove(connector);
                 iterator.remove();
             } else if (!uninitializedConnectors.contains(connector)
-                    && !LegacyCommunicationManager
-                            .isConnectorVisibleToClient(connector)) {
+                       && !isConnectorVisible(connector, visibilityCache)) {
                 // Connector was visible to the client but is no longer (e.g.
                 // setVisible(false) has been called or SelectiveRenderer tells
                 // it's no longer shown) -> make sure that the full state is
@@ -649,13 +649,15 @@ public class ConnectorTracker implements Serializable {
      */
     public ArrayList<ClientConnector> getDirtyVisibleConnectors() {
         Collection<ClientConnector> dirtyConnectors = getDirtyConnectors();
-        ArrayList<ClientConnector> dirtyVisibleConnectors = new ArrayList<>(
-                dirtyConnectors.size());
+        ArrayList<ClientConnector> dirtyVisibleConnectors = new ArrayList<>(dirtyConnectors.size());
+        Map<ClientConnector, Boolean> visibilityCache = new HashMap<>(dirtyConnectors.size());
+        
         for (ClientConnector c : dirtyConnectors) {
-            if (LegacyCommunicationManager.isConnectorVisibleToClient(c)) {
+            if (isConnectorVisible(c, visibilityCache)) {
                 dirtyVisibleConnectors.add(c);
             }
         }
+        
         return dirtyVisibleConnectors;
     }
 
@@ -899,4 +901,51 @@ public class ConnectorTracker implements Serializable {
     public int getCurrentSyncId() {
         return currentSyncId;
     }
+    
+    /**
+     * Checks whether a connector is visible to the client. This is a replacement for 
+     * {@link LegacyCommunicationManager#isConnectorVisibleToClient}. It's more efficient.
+     * 
+     * @param connector the client connector to check
+     * @param cache a call-cache
+     */    
+    private static boolean isConnectorVisible(ClientConnector connector, Map<ClientConnector, Boolean> cache) {
+        Boolean cached = cache.get(connector);
+        
+        if (cached != null) {
+            return cached;
+        }
+        
+        boolean visible;
+        if (connector instanceof Component) {
+            Component child = (Component) connector;
+            
+            if (!child.isVisible()) {
+                cache.put(connector, Boolean.FALSE);
+                return false;
+            }
+            
+            HasComponents parent = child.getParent();
+            if (parent instanceof SelectiveRenderer
+                    && !((SelectiveRenderer) parent).isRendered(child)) {
+                cache.put(connector, Boolean.FALSE);
+                return false;
+            }
+            
+            if (parent != null) {
+                visible = isConnectorVisible(parent, cache);
+            } else if (child instanceof UI) {
+                visible = true;
+            } else {
+                visible = false;
+            }
+        } else {
+            ClientConnector parent = connector.getParent();
+            visible = parent != null && isConnectorVisible(parent, cache);
+        }
+        
+        cache.put(connector, visible);
+        
+        return visible;
+    }    
 }
