@@ -940,6 +940,10 @@ public class Upload extends AbstractComponent
     public boolean isUploading() {
         return isUploading;
     }
+    
+    public boolean isInterrupted() {
+    	return interrupted;
+    }
 
     /**
      * Gets read bytes of the file currently being uploaded.
