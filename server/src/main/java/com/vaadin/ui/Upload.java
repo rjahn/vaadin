@@ -108,6 +108,8 @@ public class Upload extends AbstractComponent
     private LinkedHashSet<ProgressListener> progressListeners;
 
     private volatile boolean interrupted = false;
+    
+    private volatile String interruptedMessage = null;
 
     private boolean notStarted;
 
@@ -919,9 +921,15 @@ public class Upload extends AbstractComponent
      * the actual interrupt will happen a bit later.
      */
     public void interruptUpload() {
+    	interruptUpload(null);
+    }
+    
+    public void interruptUpload(String pMessage) {
         if (isUploading) {
             interrupted = true;
+            interruptedMessage = pMessage;
         }
+    	
     }
 
     /**
@@ -934,6 +942,7 @@ public class Upload extends AbstractComponent
         isUploading = false;
         contentLength = -1;
         interrupted = false;
+        interruptedMessage = null;
         markAsDirty();
     }
 
@@ -945,6 +954,10 @@ public class Upload extends AbstractComponent
     	return interrupted;
     }
 
+    public String getInterruptedMessage() {
+    	return interruptedMessage;
+    }
+    
     /**
      * Gets read bytes of the file currently being uploaded.
      *
