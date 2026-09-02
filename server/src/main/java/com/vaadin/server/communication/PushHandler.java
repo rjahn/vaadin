@@ -32,9 +32,11 @@ import org.atmosphere.cpr.AtmosphereResourceImpl;
 import com.vaadin.server.ErrorEvent;
 import com.vaadin.server.ErrorHandler;
 import com.vaadin.server.LegacyCommunicationManager.InvalidUIDLSecurityKeyException;
+import com.vaadin.server.RequestEntityTooLargeException;
 import com.vaadin.server.ServiceException;
 import com.vaadin.server.ServletPortletHelper;
 import com.vaadin.server.SessionExpiredException;
+import com.vaadin.server.SynchronizedRequestHandler;
 import com.vaadin.server.SystemMessages;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinService;
@@ -144,9 +146,16 @@ public class PushHandler {
         VaadinRequest vaadinRequest = VaadinService.getCurrentRequest();
         assert vaadinRequest != null;
 
+        
         try {
             new ServerRpcHandler().handleRpc(ui, reader, vaadinRequest);
             connection.push(false);
+        }
+        catch (RequestEntityTooLargeException e) {
+            getLogger().log(Level.WARNING, 
+            		"Rejected a push message with a body larger than the configured size {0}",
+                    e.getMaxBodySize());
+            sendRefreshAndDisconnect(resource);                   
         } catch (JsonException e) {
             getLogger().log(Level.SEVERE, "Error writing JSON to response", e);
             // Refresh on client side

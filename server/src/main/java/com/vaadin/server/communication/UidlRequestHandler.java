@@ -16,13 +16,18 @@
 
 package com.vaadin.server.communication;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.servlet.http.HttpServletResponse;
+
+import com.vaadin.external.org.slf4j.LoggerFactory;
 import com.vaadin.server.LegacyCommunicationManager.InvalidUIDLSecurityKeyException;
+import com.vaadin.server.RequestEntityTooLargeException;
 import com.vaadin.server.ServletPortletHelper;
 import com.vaadin.server.SessionExpiredHandler;
 import com.vaadin.server.SynchronizedRequestHandler;
@@ -66,6 +71,33 @@ public class UidlRequestHandler extends SynchronizedRequestHandler
     protected ServerRpcHandler createRpcHandler() {
         return new ServerRpcHandler();
     }
+    
+    protected boolean handleCheckedRequest(VaadinSession session, VaadinRequest request, VaadinResponse response) throws IOException {
+        BufferedReader reader = request.getReader();
+        
+        String body = null;
+                
+        try {
+        	if (reader != null) {
+        		body = getRequestBody(reader, getMaxRequestBodySize(request));
+        	}
+        } catch (RequestEntityTooLargeException re) 
+        {
+        	return handle(response, re);
+        }
+        
+        session.lock();
+        
+        try {
+        	//"" avoids reading body again!
+        	synchronizedHandleRequest(session, request, response, body == null ? "" : body);
+        }
+        finally {
+        	session.unlock();
+        }
+        
+        return true;
+    }
 
     @Override
     protected boolean canHandleRequest(VaadinRequest request) {
@@ -75,6 +107,18 @@ public class UidlRequestHandler extends SynchronizedRequestHandler
     @Override
     public boolean synchronizedHandleRequest(VaadinSession session,
             VaadinRequest request, VaadinResponse response) throws IOException {
+    	
+    	try {
+    		return synchronizedHandleRequest(session, request, response, null);
+    	}
+    	catch (RequestEntityTooLargeException re) {
+    		return handle(response, re);
+    	}
+    }
+    
+
+    public boolean synchronizedHandleRequest(VaadinSession session,
+            VaadinRequest request, VaadinResponse response, String body) throws IOException {
         UI uI = session.getService().findUI(request);
         if (uI == null) {
             // This should not happen but it will if the UI has been closed. We
@@ -87,7 +131,13 @@ public class UidlRequestHandler extends SynchronizedRequestHandler
         StringWriter stringWriter = new StringWriter();
 
         try {
-            rpcHandler.handleRpc(uI, request.getReader(), request);
+        	if (body != null) {        		
+        		rpcHandler.handleRpc(uI, body, request);
+        	}
+        	else
+        	{
+        		rpcHandler.handleRpc(uI, request.getReader(), request);
+        	}
 
             writeUidl(request, response, uI, stringWriter);
         } catch (JsonException e) {
@@ -108,7 +158,8 @@ public class UidlRequestHandler extends SynchronizedRequestHandler
 
         return UIInitHandler.commitJsonResponse(request, response,
                 stringWriter.toString());
-    }
+    }    
+    
 
     private void writeRefresh(VaadinRequest request, VaadinResponse response)
             throws IOException {
@@ -143,6 +194,15 @@ public class UidlRequestHandler extends SynchronizedRequestHandler
         outWriter.write("for(;;);[{");
     }
 
+    private boolean handle(VaadinResponse response, RequestEntityTooLargeException exception) throws IOException {
+    	LoggerFactory.getLogger(SynchronizedRequestHandler.class).warn(
+    			"Request body exceeds limit of {0}", exception.getMaxBodySize());
+    	
+    	response.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, exception.getMessage());
+	
+    	return true;
+    }
+    
     private static final Logger getLogger() {
         return Logger.getLogger(UidlRequestHandler.class.getName());
     }

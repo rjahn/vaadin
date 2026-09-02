@@ -53,17 +53,22 @@ public class DefaultDeploymentConfiguration
     public static final boolean DEFAULT_SYNC_ID_CHECK = true;
 
     public static final boolean DEFAULT_SEND_URLS_AS_PARAMETERS = true;
+    
+    /** Default value for {@link #getMaxRequestBodySize()} = no default size. */
+    public static final long DEFAULT_MAX_REQUEST_BODY_SIZE = -1;
 
+    private PushMode pushMode;
+
+    private final Class<?> systemPropertyBaseClass;
     private final Properties initParameters;
-    private boolean productionMode;
-    private boolean xsrfProtectionEnabled;
     private int resourceCacheTime;
     private int heartbeatInterval;
+    private long maxRequestBodySize;
     private boolean closeIdleSessions;
-    private PushMode pushMode;
-    private final Class<?> systemPropertyBaseClass;
     private boolean syncIdCheck;
     private boolean sendUrlsAsParameters;
+    private boolean productionMode;
+    private boolean xsrfProtectionEnabled;
 
     /**
      * Create a new deployment configuration instance.
@@ -84,6 +89,7 @@ public class DefaultDeploymentConfiguration
         checkXsrfProtection();
         checkResourceCacheTime();
         checkHeartbeatInterval();
+        checkMaxRequestBodySize();
         checkCloseIdleSessions();
         checkPushMode();
         checkSyncIdCheck();
@@ -187,7 +193,7 @@ public class DefaultDeploymentConfiguration
 
     /**
      * {@inheritDoc}
-     * <p>
+     * 
      * The default is true.
      */
     @Override
@@ -197,7 +203,7 @@ public class DefaultDeploymentConfiguration
 
     /**
      * {@inheritDoc}
-     * <p>
+     * 
      * The default interval is 3600 seconds (1 hour).
      */
     @Override
@@ -207,7 +213,7 @@ public class DefaultDeploymentConfiguration
 
     /**
      * {@inheritDoc}
-     * <p>
+     * 
      * The default interval is 300 seconds (5 minutes).
      */
     @Override
@@ -217,7 +223,7 @@ public class DefaultDeploymentConfiguration
 
     /**
      * {@inheritDoc}
-     * <p>
+     * 
      * The default value is false.
      */
     @Override
@@ -227,7 +233,7 @@ public class DefaultDeploymentConfiguration
 
     /**
      * {@inheritDoc}
-     * <p>
+     * 
      * The default value is <code>true</code>.
      */
     @Override
@@ -237,7 +243,7 @@ public class DefaultDeploymentConfiguration
 
     /**
      * {@inheritDoc}
-     * <p>
+     * 
      * The default value is <code>true</code>.
      */
     @Override
@@ -247,7 +253,7 @@ public class DefaultDeploymentConfiguration
 
     /**
      * {@inheritDoc}
-     * <p>
+     * 
      * The default mode is {@link PushMode#DISABLED}.
      */
     @Override
@@ -259,6 +265,16 @@ public class DefaultDeploymentConfiguration
     public Properties getInitParameters() {
         return initParameters;
     }
+    
+    /**
+     * {@inheritDoc}
+     * 
+     * The default is -1.
+     */
+    @Override
+    public long getMaxRequestBodySize() {
+        return maxRequestBodySize;
+    }    
 
     /**
      * Log a warning if Vaadin is not running in production mode.
@@ -310,6 +326,17 @@ public class DefaultDeploymentConfiguration
             heartbeatInterval = DEFAULT_HEARTBEAT_INTERVAL;
         }
     }
+    
+    private void checkMaxRequestBodySize() {
+        try {
+            maxRequestBodySize = Long.parseLong(getApplicationOrSystemProperty(
+                    Constants.SERVLET_PARAMETER_MAX_REQUEST_BODY_SIZE,
+                    Long.toString(DEFAULT_MAX_REQUEST_BODY_SIZE)));
+        } catch (NumberFormatException e) {
+            getLogger().warning(Constants.WARNING_MAX_REQUEST_BODY_SIZE_NOT_NUMERIC);
+            maxRequestBodySize = DEFAULT_MAX_REQUEST_BODY_SIZE;
+        }
+    }    
 
     private void checkCloseIdleSessions() {
         closeIdleSessions = getApplicationOrSystemProperty(

@@ -17,7 +17,9 @@
 package com.vaadin.server;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Properties;
+import java.util.Set;
 
 import com.vaadin.shared.communication.PushMode;
 
@@ -174,4 +176,32 @@ public interface DeploymentConfiguration extends Serializable {
      */
     public String getClassLoaderName();
 
+    /**
+     * Gets the maximum request body size in characters or -1 if size should be ignored
+     * 
+     * @return the maximum request body size or negative if ignored
+     */
+    default long getMaxRequestBodySize() {
+    	try
+    	{
+    		return Long.parseLong(getApplicationOrSystemProperty(Constants.SERVLET_PARAMETER_MAX_REQUEST_BODY_SIZE,
+                Long.toString(DefaultDeploymentConfiguration.DEFAULT_MAX_REQUEST_BODY_SIZE)));
+    	} 
+    	catch (Exception e) {
+    		return DefaultDeploymentConfiguration.DEFAULT_MAX_REQUEST_BODY_SIZE;
+    	}
+    }    
+    
+    /**
+     * Gets the URL schemes which are configured to be safe.
+     * 
+     * Please use {@link Constants#URL_SAFE_SCHEMES} property for configuration. The default 
+     * value is {@link Constants#URL_SAFE_SCHEMES_ALL}, which ignores the validation of URLs.
+     *
+     * @return the set of safe URL schemes
+     */
+    default Set<String> getUrlSafeSchemes() {
+        return Collections.singleton(Constants.URL_SAFE_SCHEMES_ALL);
+    }    
+    
 }

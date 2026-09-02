@@ -50,6 +50,13 @@ public interface Constants {
             + "in web.xml. The default of 5min will be used.\n"
             + "===========================================================";
 
+    static final String WARNING_MAX_REQUEST_BODY_SIZE_NOT_NUMERIC = "\n"
+            + "===========================================================\n"
+            + "WARNING: maxRequestBodySize has been set to a non long value "
+            + "in web.xml. The default of -1 will be used.\n"
+            + "===========================================================";
+    
+    
     static final String WARNING_PUSH_MODE_NOT_RECOGNIZED = "\n"
             + "===========================================================\n"
             + "WARNING: pushMode has been set to an unrecognized value\n"
@@ -125,6 +132,9 @@ public interface Constants {
      * @since 7.5.7
      */
     static final String SERVLET_PARAMETER_LEGACY_DESIGN_PREFIX = "legacyDesignPrefix";
+    
+    // maximum size (UIDL/RPC) -> 413 (request entity too large) -> -1 means no limit
+    static final String SERVLET_PARAMETER_MAX_REQUEST_BODY_SIZE = "maxRequestBodySize";
 
     // Configurable parameter names
     static final String PARAMETER_VAADIN_RESOURCES = "Resources";
@@ -165,5 +175,9 @@ public interface Constants {
     static final String PORTAL_PARAMETER_VAADIN_THEME = "vaadin.theme";
 
     static final String PORTLET_CONTEXT = "PORTLET_CONTEXT";
+
+    // see https://github.com/vaadin/flow/pull/24943
+    public static final String URL_SAFE_SCHEMES = "safeUrlSchemes";
+    public static final String URL_SAFE_SCHEMES_ALL = "*";    
 
 }

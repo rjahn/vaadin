@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.net.URL;
 
 import com.vaadin.util.FileTypeResolver;
+import com.vaadin.util.InternalUrlUtil;
 
 /**
  * <code>ExternalResource</code> implements source for resources fetched from
@@ -49,11 +50,7 @@ public class ExternalResource implements Resource, Serializable {
      *            the source URL.
      */
     public ExternalResource(URL sourceURL) {
-        if (sourceURL == null) {
-            throw new RuntimeException("Source must be non-null");
-        }
-
-        this.sourceURL = sourceURL.toString();
+    	this(sourceURL, false);
     }
 
     /**
@@ -76,11 +73,7 @@ public class ExternalResource implements Resource, Serializable {
      *            the source URL.
      */
     public ExternalResource(String sourceURL) {
-        if (sourceURL == null) {
-            throw new RuntimeException("Source must be non-null");
-        }
-
-        this.sourceURL = sourceURL;
+    	this(sourceURL, false);
     }
 
     /**
@@ -95,6 +88,62 @@ public class ExternalResource implements Resource, Serializable {
         this(sourceURL);
         this.mimeType = mimeType;
     }
+    
+    /**
+     * Creates a new download component for downloading directly from given URL.
+     *
+     * @param sourceURL
+     *            the source URL.
+     * @param allowUnsafe 
+     * 			  <code>true</code> to ignore safe URL check
+     */
+    public ExternalResource(URL sourceURL, boolean allowUnsafe) {
+        if (sourceURL == null) {
+            throw new RuntimeException("Source must be non-null");
+        }
+        
+        if (!allowUnsafe && !InternalUrlUtil.isSafeUrl(sourceURL.toString())) {
+            throw new IllegalArgumentException(InternalUrlUtil.createUnsafeUrlErrorMessage("sourceURL", 
+            		sourceURL.toString(), "new ExternalResource(sourceURL, true)"));
+        }
+
+        this.sourceURL = sourceURL.toString();
+    }    
+    
+    /**
+     * Creates a new download component for downloading directly from given URL.
+     *
+     * @param sourceURL
+     *            the source URL.
+     * @param mimeType
+     *            the MIME Type            
+     * @param allowUnsafe 
+     * 			  <code>true</code> to ignore safe URL check
+     */    
+    public ExternalResource(URL sourceURL, String mimeType, boolean allowUnsafe) {
+        this(sourceURL, allowUnsafe);
+        this.mimeType = mimeType;
+    }    
+    
+    /**
+     * Creates a new download component for downloading directly from given URL.
+     *
+     * @param sourceURL
+     *            the source URL.
+     * @param allowUnsafe 
+     * 			  <code>true</code> to ignore safe URL check
+     */    
+    public ExternalResource(String sourceURL, boolean allowUnsafe) {
+        if (sourceURL == null) {
+            throw new RuntimeException("Source must be non-null");
+        }
+        if (!allowUnsafe && !InternalUrlUtil.isSafeUrl(sourceURL)) {
+            throw new IllegalArgumentException(InternalUrlUtil.createUnsafeUrlErrorMessage("sourceURL", 
+            		sourceURL, "new ExternalResource(sourceURL, true)"));
+        }
+
+        this.sourceURL = sourceURL;
+    }    
 
     /**
      * Gets the URL of the external resource.

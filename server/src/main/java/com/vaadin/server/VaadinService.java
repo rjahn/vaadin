@@ -216,6 +216,9 @@ public abstract class VaadinService implements Serializable {
         connectorIdGenerator = initConnectorIdGenerator(
                 event.getAddedConnectorIdGenerators());
         assert connectorIdGenerator != null;
+        
+        //ensure initialization!
+        getDeploymentConfiguration().getUrlSafeSchemes();
 
         initialized = true;
     }
@@ -1719,6 +1722,14 @@ public abstract class VaadinService implements Serializable {
                  * endless loop. This can at least happen if refreshing a
                  * resource when the session has expired.
                  */
+            	
+                // Ensure that the browser does not cache expired responses.
+                // iOS 6 Safari requires this (#3226)
+                response.setHeader("Cache-Control", "no-cache");
+                
+                //Keep, see: https://github.com/vaadin/flow/pull/23225
+                response.setHeader("Content-Type", "text/plain");
+                
                 response.sendError(HttpServletResponse.SC_GONE,
                         "Session expired");
             }

@@ -15,6 +15,12 @@
  */
 package com.vaadin.server;
 
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+
+import com.vaadin.util.InternalUrlUtil;
+
 /**
  * An abstract base class for DeploymentConfiguration implementations. This
  * class provides default implementation for common config properties.
@@ -53,4 +59,40 @@ public abstract class AbstractDeploymentConfiguration
     public String getClassLoaderName() {
         return getApplicationOrSystemProperty("ClassLoader", null);
     }
+    
+    @Override
+    public Set<String> getUrlSafeSchemes() {
+        Set<String> schemes = InternalUrlUtil.getUrlSafeSchemes();
+        
+        if (!schemes.isEmpty()) {
+            return schemes;
+        }
+        
+        String config = getApplicationOrSystemProperty(Constants.URL_SAFE_SCHEMES, null);
+        
+        final Set<String> safeSchemes = parseSafeSchemes(config);
+        
+        InternalUrlUtil.setUrlSafeSchemes(safeSchemes != null ? safeSchemes : DeploymentConfiguration.super.getUrlSafeSchemes());
+        
+        // read to support changes in set method
+        return InternalUrlUtil.getUrlSafeSchemes();
+    }
+
+    private static Set<String> parseSafeSchemes(String value) {
+        if (value == null || value.isEmpty()) {
+            return null;
+        }
+        
+        Set<String> schemes = new HashSet<>();
+        
+        for (String scheme : value.split(",")) {
+            String trimmed = scheme.trim();
+            
+            if (!trimmed.isEmpty()) {
+                schemes.add(trimmed.toLowerCase(Locale.ROOT));
+            }
+        }
+        
+        return schemes.isEmpty() ? null : schemes;
+    }    
 }

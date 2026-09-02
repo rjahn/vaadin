@@ -16,6 +16,7 @@
 package com.vaadin.server;
 
 import java.io.IOException;
+import java.io.Reader;
 
 /**
  * RequestHandler which takes care of locking and unlocking of the VaadinSession
@@ -28,15 +29,29 @@ import java.io.IOException;
  * @since 7.1
  */
 public abstract class SynchronizedRequestHandler implements RequestHandler {
-
+	
     @Override
     public boolean handleRequest(VaadinSession session, VaadinRequest request,
             VaadinResponse response) throws IOException {
         if (!canHandleRequest(request)) {
             return false;
         }
-
-        session.lock();
+        
+        return handleCheckedRequest(session, request, response);
+    }
+    
+    /**
+     * Handles the request which is already checked with {@link #canHandleRequest(VaadinRequest)}.
+     * 
+     * @param session the session
+     * @param request the request
+     * @param response the response
+     * @return <code>true</code> if response has been written
+     * @throws IOException
+     */
+    protected boolean handleCheckedRequest(VaadinSession session, VaadinRequest request,
+            VaadinResponse response) throws IOException {
+    	session.lock();
         try {
             return synchronizedHandleRequest(session, request, response);
         } finally {
@@ -86,5 +101,65 @@ public abstract class SynchronizedRequestHandler implements RequestHandler {
     protected boolean canHandleRequest(VaadinRequest request) {
         return true;
     }
+    
+    /**
+     * Reads the request body from the given reader without limitation checks.
+     *
+     * @param reader
+     *            the reader to read from
+     * @return request body as a String
+     * @throws IOException
+     *             if reading fails
+     */
+    public static String getRequestBody(Reader reader) throws IOException {
+        return getRequestBody(reader, -1L);
+    }    
+    
+    /**
+     * Reads the request body from the given reader as long as smaller than the max body size.
+     *
+     * @param reader
+     *            the reader to read from
+     * @param maxBodySize
+     *            the maximum body size limit
+     * @return the request body as a string
+     * @throws IOException
+     *             if reading fails
+     * @throws RequestEntityTooLargeException
+     *             if the body exceeds max body size
+     */
+    public static String getRequestBody(Reader reader, long maxBodySize) throws IOException {
+        StringBuilder sb = new StringBuilder(Constants.MAX_BUFFER_SIZE);
+        char[] buffer = new char[Constants.MAX_BUFFER_SIZE];
+        long total = 0;
+
+        while (true) {
+            int read = reader.read(buffer);
+            if (read == -1) {
+                break;
+            }
+            
+            total += read;
+            
+            if (maxBodySize >= 0 && total > maxBodySize) {
+                throw new RequestEntityTooLargeException(maxBodySize);
+            }
+            
+            sb.append(buffer, 0, read);
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Gets the configured maximum request body size for the given request.
+     *
+     * @param request
+     *            the request
+     * @return the maximum request body size in characters or -1 if disabled
+     */
+    public static long getMaxRequestBodySize(VaadinRequest request) {
+        return request.getService().getDeploymentConfiguration().getMaxRequestBodySize();
+    }    
 
 }

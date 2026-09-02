@@ -43,6 +43,7 @@ import com.vaadin.ui.LegacyWindow;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
+import com.vaadin.util.InternalUrlUtil;
 import com.vaadin.util.ReflectTools;
 
 public class Page implements Serializable {
@@ -191,6 +192,31 @@ public class Page implements Serializable {
             this.border = border;
             this.tryToOpenAsPopup = tryToOpenAsPopup;
         }
+        
+        /**
+         * Creates a new open resource.
+         *
+         * @param url
+         *            The URL to open
+         * @param name
+         *            The name of the target window
+         * @param width
+         *            The width of the target window
+         * @param height
+         *            The height of the target window
+         * @param border
+         *            The border style of the target window
+         * @param tryToOpenAsPopup
+         *            Should try to open as a pop-up
+         * @param allowUnsafe
+         *            <code>true</code> to ignore safe URL check
+         */
+        private OpenResource(String url, String name, int width, int height,
+                BorderStyle border, boolean tryToOpenAsPopup,
+                boolean allowUnsafe) {
+            this(new ExternalResource(url, allowUnsafe), name, width, height,
+                    border, tryToOpenAsPopup);
+        }        
 
         /**
          * Paints the open request. Should be painted inside the window.
@@ -1006,8 +1032,16 @@ public class Page implements Serializable {
      *            the URI to show
      */
     public void setLocation(String uri) {
-        openList.add(
-                new OpenResource(uri, "_self", -1, -1, BORDER_DEFAULT, false));
+        if (uri == null) {
+            throw new IllegalArgumentException("URI must not be null");
+        }
+        
+        if (!InternalUrlUtil.isSafeUrl(uri)) {
+            throw new IllegalArgumentException(InternalUrlUtil.createUnsafeUrlErrorMessage(
+                    "uri", uri, "openUnsafe(uri, \"_self\", false);"));
+        }
+        
+        openList.add(new OpenResource(uri, "_self", -1, -1, BORDER_DEFAULT, false));
         uI.markAsDirty();
     }
 
@@ -1273,8 +1307,16 @@ public class Page implements Serializable {
      *            window
      */
     public void open(String url, String windowName, boolean tryToOpenAsPopup) {
-        openList.add(new OpenResource(url, windowName, -1, -1, BORDER_DEFAULT,
-                tryToOpenAsPopup));
+        if (url == null) {
+            throw new IllegalArgumentException("URL must not be null");
+        }
+        
+        if (!InternalUrlUtil.isSafeUrl(url)) {
+            throw new IllegalArgumentException(InternalUrlUtil.createUnsafeUrlErrorMessage("url", 
+            		url, "openUnsafe(url, windowName, tryToOpenAsPopup)"));
+        }    	
+    	
+        openList.add(new OpenResource(url, windowName, -1, -1, BORDER_DEFAULT, tryToOpenAsPopup));
         uI.markAsDirty();
     }
 
@@ -1304,6 +1346,14 @@ public class Page implements Serializable {
      */
     public void open(String url, String windowName, int width, int height,
             BorderStyle border) {
+        if (url == null) {
+            throw new IllegalArgumentException("URL must not be null");
+        }
+        if (!InternalUrlUtil.isSafeUrl(url)) {
+            throw new IllegalArgumentException(InternalUrlUtil.createUnsafeUrlErrorMessage("URL", 
+            		url, "openUnsafe(url, windowName, width, height, border)"));
+        }    	
+    	
         openList.add(
                 new OpenResource(url, windowName, width, height, border, true));
         uI.markAsDirty();
@@ -1336,6 +1386,62 @@ public class Page implements Serializable {
                 BORDER_DEFAULT, tryToOpenAsPopup));
         uI.markAsDirty();
     }
+    
+    /**
+     * Opens the given URL in a window with the given name without validating
+     * its scheme.
+     *
+     * @param url
+     *            the URL to open
+     * @param windowName
+     *            the name of the window
+     * @see #open(String, String)
+     */
+    public void openUnsafe(String url, String windowName) {
+        openUnsafe(url, windowName, true);
+    }
+
+    /**
+     * Opens the given URL in a window with the given name without validating
+     * its scheme.
+     *
+     * @param url
+     *            the URL to open
+     * @param windowName
+     *            the name of the window
+     * @param tryToOpenAsPopup
+     *            Whether to try to force the resource to be opened in a new
+     *            window
+     * @see #open(String, String, boolean)
+     */
+    public void openUnsafe(String url, String windowName,
+            boolean tryToOpenAsPopup) {
+        openList.add(new OpenResource(url, windowName, -1, -1, BORDER_DEFAULT,
+                tryToOpenAsPopup, true));
+        uI.markAsDirty();
+    }
+
+    /**
+     * Opens the given URL in a window with the given size, border, and name
+     * without validating its scheme.
+     * 
+     * @param url
+     *            the URL to open
+     * @param windowName
+     *            the name of the window
+     * @param width
+     *            the width of the window in pixels
+     * @param height
+     *            the height of the window in pixels
+     * @param border
+     *            the border style of the window
+     */
+    public void openUnsafe(String url, String windowName, int width, int height,
+            BorderStyle border) {
+        openList.add(new OpenResource(url, windowName, width, height, border,
+                true, true));
+        uI.markAsDirty();
+    }    
 
     /**
      * Internal helper method to actually add a notification.

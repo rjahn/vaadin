@@ -36,6 +36,7 @@ import com.vaadin.server.LegacyCommunicationManager.InvalidUIDLSecurityKeyExcept
 import com.vaadin.server.ServerRpcManager;
 import com.vaadin.server.ServerRpcManager.RpcInvocationException;
 import com.vaadin.server.ServerRpcMethodInvocation;
+import com.vaadin.server.SynchronizedRequestHandler;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VariableOwner;
@@ -209,9 +210,7 @@ public class ServerRpcHandler implements Serializable {
             return json.hasKey(ApplicationConstants.UNLOAD_BEACON);
         }        
     }
-
-    private static final int MAX_BUFFER_SIZE = 64 * 1024;
-
+    
     /**
      * Reads JSON containing zero or more serialized RPC calls (including legacy
      * variable changes) and executes the calls.
@@ -226,19 +225,37 @@ public class ServerRpcHandler implements Serializable {
      * @throws InvalidUIDLSecurityKeyException
      *             If the received security key does not match the one stored in
      *             the session.
-     */
+     */    
     public void handleRpc(UI ui, Reader reader, VaadinRequest request)
+            throws IOException, InvalidUIDLSecurityKeyException {
+        handleRpc(ui, getMessage(reader, request), request);
+    }    
+
+    /**
+     * Reads JSON containing zero or more serialized RPC calls (including legacy
+     * variable changes) and executes the calls.
+     *
+     * @param ui
+     *            The {@link UI} receiving the calls. Cannot be null.
+     * @param message
+     *            The JSON message.
+     * @param request
+     * @throws IOException
+     *             If reading the message fails.
+     * @throws InvalidUIDLSecurityKeyException
+     *             If the received security key does not match the one stored in
+     *             the session.
+     */
+    public void handleRpc(UI ui, String message, VaadinRequest request)
             throws IOException, InvalidUIDLSecurityKeyException {
         ui.getSession().setLastRequestTimestamp(System.currentTimeMillis());
 
-        String changeMessage = getMessage(reader);
-
-        if (changeMessage == null || changeMessage.isEmpty()) {
+        if (message == null || message.isEmpty()) {
             // The client sometimes sends empty messages, this is probably a bug
             return;
         }
 
-        RpcRequest rpcRequest = new RpcRequest(changeMessage, request);
+        RpcRequest rpcRequest = new RpcRequest(message, request);
 
         // Security: double cookie submission pattern unless disabled by
         // property
@@ -675,19 +692,12 @@ public class ServerRpcHandler implements Serializable {
     }
 
     protected String getMessage(Reader reader) throws IOException {
-
-        StringBuilder sb = new StringBuilder(MAX_BUFFER_SIZE);
-        char[] buffer = new char[MAX_BUFFER_SIZE];
-
-        while (true) {
-            int read = reader.read(buffer);
-            if (read == -1) {
-                break;
-            }
-            sb.append(buffer, 0, read);
-        }
-
-        return sb.toString();
+    	return SynchronizedRequestHandler.getRequestBody(reader);
+    }    
+    
+    protected String getMessage(Reader reader, VaadinRequest request) throws IOException {
+        return SynchronizedRequestHandler.getRequestBody(reader,
+                SynchronizedRequestHandler.getMaxRequestBodySize(request));
     }
 
     private static final Logger getLogger() {
