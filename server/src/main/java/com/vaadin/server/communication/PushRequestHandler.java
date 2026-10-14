@@ -32,7 +32,6 @@ import org.atmosphere.cpr.AtmosphereHandler;
 import org.atmosphere.cpr.AtmosphereInterceptor;
 import org.atmosphere.cpr.AtmosphereRequestImpl;
 import org.atmosphere.cpr.AtmosphereResponseImpl;
-import org.atmosphere.interceptor.HeartbeatInterceptor;
 import org.atmosphere.util.VoidAnnotationProcessor;
 
 import com.vaadin.server.RequestHandler;
@@ -167,6 +166,9 @@ public class PushRequestHandler
             @Override
             public AtmosphereFramework addInitParameter(String name,
                     String value) {
+
+            	//don't set parameter if available in servlet config. If available in servlet config,
+            	//it will be returned in getInitParameter because it's not set here
                 if (vaadinServletConfig.getInitParameter(name) == null) {
                     super.addInitParameter(name, value);
                 }
@@ -183,9 +185,21 @@ public class PushRequestHandler
                 "true");
         atmosphere.addInitParameter(ApplicationConfig.MESSAGE_DELIMITER,
                 String.valueOf(PushConstants.MESSAGE_DELIMITER));
+        
+        // Disable Atmosphere's CorsInterceptor, which reflects any Origin with
+        // credentials. Apps that embed vaadin cross-origin handle CORS
+        // themselves.
+        // see https://github.com/vaadin/flow/issues/26214
+        //
+        // for the old behavior, set in web.xml:
+        //
+	    // <init-param>
+	    //   <param-name>org.atmosphere.cpr.dropAccessControlAllowOriginHeader</param-name>
+	    //   <param-value>false</param-value>
+	    // </init-param>
         atmosphere.addInitParameter(
                 ApplicationConfig.DROP_ACCESS_CONTROL_ALLOW_ORIGIN_HEADER,
-                "false");
+                "true");
 
         final String bufferSize = String
                 .valueOf(PushConstants.WEBSOCKET_BUFFER_SIZE);
