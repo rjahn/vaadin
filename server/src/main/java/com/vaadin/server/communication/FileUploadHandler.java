@@ -24,8 +24,13 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.security.MessageDigest;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletResponse;
 
 import com.vaadin.server.ClientConnector;
+import com.vaadin.server.ConnectorResourceHandler;
 import com.vaadin.server.NoInputStreamException;
 import com.vaadin.server.NoOutputStreamException;
 import com.vaadin.server.RequestHandler;
@@ -269,7 +274,20 @@ public class FileUploadHandler implements RequestHandler {
 
         session.lock();
         try {
-            UI uI = session.getUIById(Integer.parseInt(uiId));
+            UI uI;
+            
+            try {
+            	uI = session.getUIById(Integer.parseInt(uiId));
+            }
+            catch (NumberFormatException nfe) {
+            	uI = null;
+            }
+            
+            if (uI == null) {
+                return error(request, response,
+                        "No UI found for id  " + uiId);
+            }            
+            
             UI.setCurrent(uI);
 
             streamVariable = uI.getConnectorTracker()
@@ -705,4 +723,20 @@ public class FileUploadHandler implements RequestHandler {
                     variableName);
         });
     }
+    
+    private static Logger getLogger() {
+        return Logger.getLogger(FileUploadHandler.class.getName());
+
+    }
+    
+    private static boolean error(VaadinRequest request, VaadinResponse response,
+            String logMessage) throws IOException {
+        getLogger().log(Level.WARNING, logMessage);
+        response.sendError(HttpServletResponse.SC_NOT_FOUND,
+                request.getPathInfo() + " can not be found");
+
+        // Request handled (though not in a nice way)
+        return true;
+    }
+    
 }

@@ -1082,8 +1082,14 @@ public abstract class VaadinService implements Serializable {
         String uiIdString = request.getParameter(UIConstants.UI_ID_PARAMETER);
         UI ui = null;
         if (uiIdString != null && session != null) {
-            int uiId = Integer.parseInt(uiIdString);
-            ui = session.getUIById(uiId);
+        	
+        	try {
+	            int uiId = Integer.parseInt(uiIdString);
+	            ui = session.getUIById(uiId);
+        	}
+        	catch (NumberFormatException nfe) {
+        		ui = null;
+        	}
         }
 
         UI.setCurrent(ui);

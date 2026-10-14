@@ -66,7 +66,13 @@ public class ConnectorResourceHandler implements RequestHandler {
         UI ui;
         ClientConnector connector;
         try {
-            ui = session.getUIById(Integer.parseInt(uiId));
+        	try {
+        		ui = session.getUIById(Integer.parseInt(uiId));
+        	}
+        	catch (NumberFormatException nfe) {
+        		ui = null;
+        	}
+        	
             if (ui == null) {
                 return error(request, response,
                         "Ignoring connector request for no-existent root "

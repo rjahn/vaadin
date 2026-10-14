@@ -90,7 +90,15 @@ public class GlobalResourceHandler implements RequestHandler {
         Map<Class<?>, CurrentInstance> oldInstances = null;
         DownloadStream stream = null;
         try {
-            UI ui = session.getUIById(Integer.parseInt(uiid));
+            UI ui = null;
+            
+            try {
+            	ui = session.getUIById(Integer.parseInt(uiid));
+            }
+            catch (NumberFormatException nfe) {
+            	ui = null;
+            }
+            
             if (ui == null) {
                 return error(request, response, "No UI found for id  " + uiid);
             }
