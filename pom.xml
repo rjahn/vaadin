@@ -95,10 +95,6 @@
     
     </pluginRepositories>
 -->
-    <organization>
-        <name>Vaadin Ltd</name>
-    </organization>
-    <url>https://vaadin.com/</url>
     <description>Vaadin Framework Root Pom</description>
     <licenses>
         <license>
@@ -108,9 +104,9 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:git:git://github.com/vaadin/framework.git</connection>
-        <developerConnection>scm:git:git://github.com/vaadin/framework.git</developerConnection>
-        <url>https://github.com/vaadin/framework</url>
+        <connection>scm:git:git://github.com/rjahn/vaadin.git</connection>
+        <developerConnection>scm:git:git://github.com/rjahn/vaadin.git</developerConnection>
+        <url>https://github.com/rjahn/vaadin</url>
     </scm>
 
 
