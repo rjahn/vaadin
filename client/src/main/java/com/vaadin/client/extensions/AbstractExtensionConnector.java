@@ -47,6 +47,14 @@ public abstract class AbstractExtensionConnector extends AbstractConnector {
             hasBeenAttached = true;
         }
     }
+    
+    /**
+     * Will be called whenever the target element/widget has changed (e.g. server-update or layour reflow)
+     * Can be used to re-apply changes in custom extensions. 
+     */
+    public void onWidgetRecreated()
+    {
+    }
 
     /**
      * Called when the extension is attached to its parent. This method is only

@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2000-2016 Vaadin Ltd.
  *
@@ -14,6 +15,9 @@
  * the License.
  */
 package com.vaadin.client.ui;
+
+import java.util.Collection;
+import java.util.logging.Logger;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArrayString;
@@ -44,10 +48,10 @@ import com.vaadin.client.StyleConstants;
 import com.vaadin.client.TooltipInfo;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.Util;
-import com.vaadin.client.VConsole;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.annotations.OnStateChange;
 import com.vaadin.client.communication.StateChangeEvent;
+import com.vaadin.client.extensions.AbstractExtensionConnector;
 import com.vaadin.client.extensions.DragSourceExtensionConnector;
 import com.vaadin.client.extensions.DropTargetExtensionConnector;
 import com.vaadin.client.metadata.NoDataException;
@@ -64,6 +68,9 @@ import com.vaadin.shared.ui.ComponentStateUtil;
 import com.vaadin.shared.ui.TabIndexState;
 import com.vaadin.shared.ui.ui.UIState;
 
+/**
+ * The AbstractComponentConnector.
+ */
 public abstract class AbstractComponentConnector extends AbstractConnector
         implements ComponentConnector, HasErrorIndicator {
 
@@ -76,6 +83,9 @@ public abstract class AbstractComponentConnector extends AbstractConnector
 
     private boolean tooltipListenersAttached = false;
 
+
+    private com.google.gwt.dom.client.Element lastObservedElement = null;
+    
     /**
      * The style names from getState().getStyles() which are currently applied
      * to the widget.
@@ -92,6 +102,7 @@ public abstract class AbstractComponentConnector extends AbstractConnector
     private int touchStartY;
     private boolean preventNextTouchEnd = false;
 
+    /** the move threshold. */
     protected int SIGNIFICANT_MOVE_THRESHOLD = 20; // pixels
 
     // long touch event delay
@@ -286,6 +297,11 @@ public abstract class AbstractComponentConnector extends AbstractConnector
         }, TouchEndEvent.getType());
     }
 
+    /**
+     * Whether we should handle long tap.
+     * 
+     * @return <code>true</code> if we should handle, <code>false</code> otherwise
+     */
     protected boolean shouldHandleLongTap() {
         return BrowserInfo.get().isTouchDevice();
     }
@@ -330,8 +346,8 @@ public abstract class AbstractComponentConnector extends AbstractConnector
      * interface.
      *
      * @since 7.6
-     * @param details
-     * @param eventTarget
+     * @param details the details
+     * @param eventTarget the event target
      */
     protected void sendContextClickEvent(MouseEventDetails details,
             EventTarget eventTarget) {
@@ -397,6 +413,12 @@ public abstract class AbstractComponentConnector extends AbstractConnector
         return widget;
     }
 
+    /**
+     * Gets whether the given request is a real update.
+     * 
+     * @param uidl the UIDL
+     * @return <code>true</code> for real update
+     */
     @Deprecated
     public static boolean isRealUpdate(UIDL uidl) {
         return !uidl.hasAttribute("cached");
@@ -473,6 +495,12 @@ public abstract class AbstractComponentConnector extends AbstractConnector
         Profiler.leave(
                 "AbstractComponentConnector.onStateChanged updateComponentSize");
 
+        checkAndReapplyStyles();        
+        
+        // There is no layout path anymore, if the text changes. 
+        // So 100% is applied on component. We need a layout path anyway, as otherwise
+        getLayoutManager().setNeedsMeasure(this);
+        
         Profiler.enter(
                 "AbstractComponentContainer.onStateChanged check tooltip");
         if (!tooltipListenersAttached && hasTooltip()) {
@@ -504,15 +532,47 @@ public abstract class AbstractComponentConnector extends AbstractConnector
             ServerConnector parent = getParent();
             if (parent instanceof HasComponentsConnector) {
                 ((HasComponentsConnector) parent).updateCaption(this);
-            } else if (parent == null && !(this instanceof UIConnector)) {
-                VConsole.error("Parent of connector "
+            } 
+            else if (parent == null && !(this instanceof UIConnector)) 
+            {
+            	Logger.getLogger(getClass().getName()).severe("Parent of connector "
                         + Util.getConnectorString(this)
                         + " is null. This is typically an indication of a broken component hierarchy");
             }
         }
 
     }
-
+    
+    /**
+     * Checks if render element has changed and sends a notification to all extensions. 
+     */
+    protected void checkAndReapplyStyles() {
+        Widget widget = getWidget();
+        
+        if (widget != null) {
+            Element currentElement = widget.getElement();
+            
+            if (lastObservedElement != currentElement) {
+                lastObservedElement = currentElement;
+                
+                // notify extensions for this element
+                notifyExtensionsWidgetRecreated();
+            }
+        }
+    }    
+    
+    private void notifyExtensionsWidgetRecreated() {
+        Collection<ServerConnector> children = getChildren();
+        
+        if (children != null) {
+            for (ServerConnector child : children) {
+                // only update extensions
+                if (child instanceof AbstractExtensionConnector) {
+                    ((AbstractExtensionConnector) child).onWidgetRecreated();
+                }
+            }
+        }
+    }
     /**
      * Updates the component size based on the shared state, invoking the
      * {@link LayoutManager layout manager} if necessary.
@@ -711,6 +771,8 @@ public abstract class AbstractComponentConnector extends AbstractConnector
      * {@link com.vaadin.client.ui.datefield.TextualDateConnector#setWidgetStyleNameWithPrefix(String, String, boolean)}
      * </p>
      *
+     * @param prefix
+     *            the prefix
      * @param styleName
      *            the style name to be added or removed
      * @param add
@@ -754,7 +816,7 @@ public abstract class AbstractComponentConnector extends AbstractConnector
         // at this point.
         if (getWidget() != null && getWidget().isAttached()) {
             getWidget().removeFromParent();
-            VConsole.error(
+            Logger.getLogger(getClass().getName()).severe(
                     "Widget is still attached to the DOM after the connector ("
                             + Util.getConnectorString(this)
                             + ") has been unregistered. Widget was removed.");
