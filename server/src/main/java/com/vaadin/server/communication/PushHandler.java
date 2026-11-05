@@ -397,24 +397,40 @@ public class PushHandler {
                         "Could not find push connection to close: {0} with transport {1}",
                         new Object[] { id, resource.transport() });
             } else {
-                if (!pushMode.isEnabled()) {
-                    /*
-                     * The client is expected to close the connection after push
-                     * mode has been set to disabled.
-                     */
-                    getLogger().log(Level.FINER,
-                            "Connection closed for resource {0}", id);
-                } else {
-                    /*
-                     * Unexpected cancel, e.g. if the user closes the browser
-                     * tab.
-                     */
-                    getLogger().log(Level.FINER,
-                            "Connection unexpectedly closed for resource {0} with transport {1}",
-                            new Object[] { id, resource.transport() });
-                }
+            	AtmosphereResource res = pushConnection.getResource();
+            	
+            	//https://github.com/vaadin/flow/issues/26689
+            	if (res != null && res != resource) {
+            		
+            		// The client has already reconnected and the connection uses a
+					// newer resource, so this is a late event for the old one.
+                 	// Atmosphere reuses the tracking id on reconnect, so the
+            		// resources are told apart by identity, not by uuid.
 
-                pushConnection.connectionLost();
+	                getLogger().log(Level.FINE,
+	                        "Ignoring disconnect of stale resource {0} with transport {1}",
+	                        new Object[] { id, resource.transport() });
+            	}
+            	else {
+	                if (!pushMode.isEnabled()) {
+	                    /*
+	                     * The client is expected to close the connection after push
+	                     * mode has been set to disabled.
+	                     */
+	                    getLogger().log(Level.FINER,
+	                            "Connection closed for resource {0}", id);
+	                } else {
+	                    /*
+	                     * Unexpected cancel, e.g. if the user closes the browser
+	                     * tab.
+	                     */
+	                    getLogger().log(Level.FINER,
+	                            "Connection unexpectedly closed for resource {0} with transport {1}",
+	                            new Object[] { id, resource.transport() });
+	                }
+	
+	                pushConnection.connectionLost();
+            	}
             }
 
         } catch (final Exception e) {
